@@ -31,16 +31,19 @@ public:
   static constexpr array_t<float, 4> STARTING_REGION{0.0f, 150.0f, 0.0f, 450.0f};
   static constexpr array_t<float, 4> GOAL_REGION{550.0f, 150.0f, 700.0f, 450.0f};
 
-  static constexpr array_t<int, 4> LIGHT_POSITION{50.0f, 550.0f, 400.0f, 350.0f};
+  static constexpr array_t<vector_t, 2> LIGHT_POSITION{
+    vector_t{50, 550},
+    vector_t{400, 350}
+  };
   static constexpr float LIGHT_RADIUS = 20.0f;
 
-  static constexpr float EGO_RADIUS = 2.0f;
+  static constexpr float EGO_RADIUS = 5.0f;
   static constexpr float EGO_SPEED = 10.0f;
 
   static constexpr float DELTA = 1.0f;
 
   static constexpr float EGO_START_STD = 1.0f;
-  static constexpr float OBSERVATION_NOISE = 0.1f;
+  static constexpr float OBSERVATION_NOISE = 0.3f;
 
   // Randomization over initialization and context.
   inline static vector_t EGO_START_MEAN;
@@ -110,7 +113,9 @@ public:
   /* ====== Stepping functions ====== */
   bool IsTerminal() const { return _is_terminal; }
   bool IsFailure() const { return _is_failure; }
-  bool collision() const; //check collision with walls and danger zones during stepping
+  bool CircleBoxCollision(vector_t pos, float wall_width, float wall_height) const; //circle and rectangle collision
+  bool CheckCollision(vector_t pos) const; //check collision with walls and danger zones during stepping
+  bool IsInLight(vector_t pos) const;
   template <bool compute_log_prob>
   std::tuple<Navigation2D, float, Observation, float> Step(
       const Action& action, const Observation* observation=nullptr) const;

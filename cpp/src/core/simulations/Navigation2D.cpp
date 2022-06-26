@@ -93,7 +93,136 @@ Best reward always comes from the least amount of steps with no collisions.
   }
 }
 
+/* ====== Stepping Related Functions ====== */
+bool Navigation2D::CircleBoxCollision(vector_t pos, float wall_width, float wall_height){
+  float wall_centre_x = wall_width / 2.0f;
+  float wall_centre_y = wall_width / 2.0f;
 
+  float centre_distance_x = abs(pos.x - wall_centre_x);
+  float centre_distance_y = abs(pos.y - wall_centre_y);
 
+  if(centre_distance_x > wall_centre_x + EGO_RADIUS){return false};
+  if(centre_distance_y > wall_centre_y + EGO_RADIUS){return false};
+
+  if(centre_distance_x <= wall_centre_x){return true};
+  if(centre_distance_y <= wall_centre_y){return true};
+
+  float corner_distance = powf(centre_distance_x - wall_centre_x, 2) + powf(centre_distance_y - wall_centre_y, 2);
+  return corner_distance <= powf(EGO_RADIUS, 2);
+}
+
+bool Navigation2D::CheckCollision(vector_t pos){
+  //check collision with walls
+  for(const list_t<float> &wall : CLOSED_WALLS){
+    float wall_width = abs(wall[0] - wall[2]);
+    float wall_height = abs(wall[1] - wall[3]);
+    if(CircleBoxCollision(pos, wall_width, wall_height)){
+      return true;
+    }
+  }
+  //check collision with danger zones
+  //TODO: add danger zones 
+  return false;
+}
+
+bool IsInLight(vector_t pos){
+  for(const vector_t &light : LIGHT_POSITION){
+    if((pos - light).norm() <= LIGHT_RADIUS){
+      return true;
+    }
+  }
+  return false;
+}
+
+template <bool compute_log_prob>
+std::tuple<Navigation2D, float, Navigation2D::Observation, float> Navigation2D::Step(
+    const Navigation2D::Action& action, const Navigation2D::Observation* observation) const {
+  if (_is_terminal) { throw std::logic_error("Cannot step terminal simulation."); }
+
+  Navigation2D next_sim = *this;
+  float reward;
+
+  /* ====== Step 1: Update state.  ======*/
+  next_sim.ego_agent_position += DELTA * vector_t(EGO_SPEED, 0).rotated(action.orientation); 
+  next_sim.step++;
+  //update rewards based on the current step
+  if(CheckCollision(ego_agent_position)){
+    reward = COLLISION_REWARD;
+    next_sim._is_failure = true;
+    next_sim._is_terminal = true;
+  }
+  else if((next_sim.ego_agent_position - GOAL).norm() <= EGO_RADIUS){
+    reward = GOAL_REWARD;
+    next_sim._is_failure = false;
+    next_sim._is_terminal = true;
+  }
+  else if(next_sim.step == MAX_STEPS){
+    reward = COLLISION_REWARD;
+    next_sim._is_failure = true;
+    next_sim._is_terminal = true;
+  }
+  else{
+    reward = STEP_REWARD;
+    next_sim._is_failure = false;
+    next_sim._is_terminal = false;
+  }
+
+  /* ====== Step 2: Generate observation. ====== */
+  Observation new_observation;
+  if (observation) {
+    new_observation = *observation;
+  }
+
+  float log_prob = 0;
+  bool in_light = IsInLight(next_sim.ego_agent_position);
+
+  if(!observation){
+    if(in_light){
+      //in lights, the agent accurately localise itself
+      new_observation.ego_agent_position = next_sim.ego_agent_position;
+    }
+    else{
+      //outside of lights, the agent recieves noisy localisation readings
+      new_observation.ego_agent_position = next_sim.ego_agent_position;
+      new_observation.ego_agent_position.x += std::normal_distribution<float>(0.0, OBSERVATION_NOISE)(RngDet());
+      new_observation.ego_agent_position.y += std::normal_distribution<float>(0.0, OBSERVATION_NOISE)(RngDet());
+    }
+  }
+  if constexpr (compute_log_prob){
+    //TODO: Figure out what this condition is doing... 
+    //compute_log_prob is set to false in DespotPlanner.h, so leave this code here for now should be fine.
+    if (in_light) {
+      if (std::isnan(new_observation.ego_agent_position.x) && std::isnan(new_observation.ego_agent_position.y)) {
+        log_prob += -std::numeric_limits<float>::infinity();
+      } else {
+        log_prob += NormalLogProb(next_sim.ego_agent_position.x, OBSERVATION_NOISE, new_observation.ego_agent_position.x);
+        log_prob += NormalLogProb(next_sim.ego_agent_position.y, OBSERVATION_NOISE, new_observation.ego_agent_position.y);
+      }
+    } else {
+      if (std::isnan(new_observation.ego_agent_position.x) && std::isnan(new_observation.ego_agent_position.y)) {
+        log_prob += 0;
+      } else {
+        log_prob += -std::numeric_limits<float>::infinity();
+      }
+    }
+  }
+  return std::make_tuple(next_sim, reward, observation ? Observation() : new_observation, log_prob);
+}
+template std::tuple<Navigation2D, float, Navigation2D::Observation, float> Navigation2D::Step<true>(
+    const Navigation2D::Action& action, const Navigation2D::Observation* observation) const;
+template std::tuple<Navigation2D, float, Navigation2D::Observation, float> Navigation2D::Step<false>(
+    const Navigation2D::Action& action, const Navigation2D::Observation* observation) const;
+
+void LightDark::Encode(list_t<float>& data) const {
+  data.emplace_back(static_cast<float>(step));
+  ego_agent_position.Encode(data);
+}
+
+void LightDark::EncodeContext(list_t<float>& data) {
+  GOAL.Encode(data);
+  data.emplace_back(LIGHT_POS);
+}
+
+//TODO: Add in render functions for visualisation
 
 }
