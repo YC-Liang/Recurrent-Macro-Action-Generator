@@ -107,6 +107,7 @@ foreach(TASK
     LightDark
     PuckPush
     VdpTag
+    Navigation2D
     )
   message("  TaskTest${TASK}")
   add_executable("TaskTest${TASK}" src/experiments/TaskTest.cpp)

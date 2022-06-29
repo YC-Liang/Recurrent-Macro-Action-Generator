@@ -16,15 +16,15 @@ public:
   static constexpr float MAP_WIDTH = 700.0f;
 
   // a total of three walls as three vectors. Each vector stores the bounding corner coordinates of the wall.
-  static constexpr array_t<list_t<float>, 3> CLOSED_WALLS{
-    list_t<float>{100, 0, 400, 150},
-    list_t<float>{100, 250, 400, 350},
-    list_t<float>{100, 450, 400, 600}
+  static constexpr array_t<array_t<float, 4>, 3> CLOSED_WALLS{
+    array_t<float, 4>{100, 0, 400, 150},
+    array_t<float, 4>{100, 250, 400, 350},
+    array_t<float, 4>{100, 450, 400, 600}
   };
 
-  static constexpr array_t<list_t<float>, 2> DANGER_ZONES{
-    list_t<float>{100, 150, 400, 170},
-    list_t<float>{100, 230, 400, 250}
+  static constexpr array_t<array_t<float, 4>, 2> DANGER_ZONES{
+    array_t<float, 4>{100, 150, 400, 170},
+    array_t<float, 4>{100, 230, 400, 250}
   };
 
   //randomisation starting region
@@ -42,8 +42,9 @@ public:
 
   static constexpr float DELTA = 1.0f;
 
-  static constexpr float EGO_START_STD = 1.0f;
-  static constexpr float OBSERVATION_NOISE = 0.3f;
+  static constexpr float EGO_START_STD = 3.0f;
+  static constexpr float OBSERVATION_NOISE = 1.0f;
+  static constexpr float MOTION_NOISE = 1.0f;
 
   // Randomization over initialization and context.
   inline static vector_t EGO_START_MEAN;
@@ -89,8 +90,8 @@ public:
     float orientation;
     static Action Rand();
     Action() {}
-    Action(float orientation) : trigger(false), orientation(orientation) { }
-    float Id() const { return trigger ? std::numeric_limits<float>::quiet_NaN() : orientation; }
+    Action(float orientation) : orientation(orientation) { }
+    float Id() const { return orientation; }
 
     static list_t<list_t<Action>> CreateHandcrafted(size_t length);
     static list_t<list_t<Action>> Deserialize(const list_t<float>& params, size_t macro_length);
@@ -113,7 +114,7 @@ public:
   /* ====== Stepping functions ====== */
   bool IsTerminal() const { return _is_terminal; }
   bool IsFailure() const { return _is_failure; }
-  bool CircleBoxCollision(vector_t pos, float wall_width, float wall_height) const; //circle and rectangle collision
+  bool CircleBoxCollision(vector_t pos, float wall_centre_x, float wall_centre_y, float wall_width, float wall_height) const; //circle and rectangle collision
   bool CheckCollision(vector_t pos) const; //check collision with walls and danger zones during stepping
   bool IsInLight(vector_t pos) const;
   template <bool compute_log_prob>

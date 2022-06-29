@@ -19,4 +19,7 @@
 #elif defined SIM_DriveHard
   #include "core/simulations/DriveHard.h"
   typedef simulations::DriveHard ExpSimulation;
+#elif defined SIM_Navigation2D
+  #include "core/simulations/Navigation2D.h"
+  typedef simulations::Navigation2D ExpSimulation;
 #endif
