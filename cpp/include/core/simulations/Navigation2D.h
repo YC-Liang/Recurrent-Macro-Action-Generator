@@ -11,64 +11,59 @@ class Navigation2D {
 public:
 
   // Environment parameters.
-  // map sizes
-  static constexpr float MAP_HEIGHT = 600.0f;
-  static constexpr float MAP_WIDTH = 700.0f;
 
   // a total of three walls as three vectors. Each vector stores the bounding corner coordinates of the wall.
   static constexpr array_t<array_t<float, 4>, 3> CLOSED_WALLS{
-    array_t<float, 4>{100, 0, 400, 150},
-    array_t<float, 4>{100, 250, 400, 350},
-    array_t<float, 4>{100, 450, 400, 600}
+    array_t<float, 4>{-25, 30, 5, 15},
+    array_t<float, 4>{-25, 5, 5, -5},
+    array_t<float, 4>{-25, -15, 5, -30}
   };
 
   static constexpr array_t<array_t<float, 4>, 2> DANGER_ZONES{
-    array_t<float, 4>{100, 150, 400, 170},
-    array_t<float, 4>{100, 230, 400, 250}
+    array_t<float, 4>{-25, 15, 5, 13},
+    array_t<float, 4>{-25, 7, 5, 5}
   };
 
   //randomisation starting region
-  static constexpr array_t<float, 4> STARTING_REGION{0.0f, 150.0f, 0.0f, 450.0f};
-  static constexpr array_t<float, 4> GOAL_REGION{550.0f, 150.0f, 700.0f, 450.0f};
+  static constexpr array_t<float, 4> STARTING_REGION{-30.0f, 15.0f, -30.0f, -15.0f};
+  static constexpr array_t<float, 4> GOAL_REGION{20.0f, 15.0f, 35.0f, -15.0f};
 
   static constexpr array_t<vector_t, 2> LIGHT_POSITION{
-    vector_t{50, 550},
-    vector_t{400, 350}
+    vector_t{-30, -25},
+    vector_t{5, -5}
   };
-  static constexpr float LIGHT_RADIUS = 20.0f;
+  static constexpr float LIGHT_RADIUS = 2.0f;
 
-  static constexpr float EGO_RADIUS = 5.0f;
-  static constexpr float EGO_SPEED = 10.0f;
+  static constexpr float EGO_RADIUS = 1.0f;
+  static constexpr float EGO_SPEED = 1.0f;
 
   static constexpr float DELTA = 1.0f;
 
-  static constexpr float EGO_START_STD = 3.0f;
+  static constexpr float EGO_START_STD = 1.0f;
   static constexpr float OBSERVATION_NOISE = 1.0f;
   static constexpr float MOTION_NOISE = 1.0f;
 
   // Randomization over initialization and context.
   inline static vector_t EGO_START_MEAN;
   inline static vector_t GOAL;
-  /*
-  static constexpr array_t<vector_t, 4> RANDOMIZATION_REGION{ // ego start mean, goal, light pos are bounded within this.
-      vector_t{-4, 4},
-      vector_t{4, 4},
-      vector_t{4, -4},
-      vector_t{-4, -4}
-  };*/
+
+  static constexpr array_t<vector_t, 2> RANDOM_START_REGION{
+    vector_t{-30, 10},
+    vector_t{-30, -10}
+  };
 
   // Belief tracking related parameters.
   static constexpr size_t BELIEF_NUM_PARTICLES = 10000;
 
   // Planning related parameters.
-  static constexpr size_t MAX_STEPS = 240;
+  static constexpr size_t MAX_STEPS = 250;
   static constexpr float STEP_REWARD = -0.1f;
   static constexpr float COLLISION_REWARD = -100;
   static constexpr float GOAL_REWARD = 100;
   static constexpr float GAMMA = 0.98f;
   static constexpr float WORST_REWARD = COLLISION_REWARD;
-  static constexpr size_t SEARCH_DEPTH = 240;
-  static constexpr size_t PLANNING_TIME = 500;
+  static constexpr size_t SEARCH_DEPTH = 250;
+  static constexpr size_t PLANNING_TIME = 400;
 
   // POMCPOW related parameters.
   static constexpr float POMCPOW_UCB = 50;
@@ -117,6 +112,7 @@ public:
   bool CircleBoxCollision(vector_t pos, float wall_centre_x, float wall_centre_y, float wall_width, float wall_height) const; //circle and rectangle collision
   bool CheckCollision(vector_t pos) const; //check collision with walls and danger zones during stepping
   bool IsInLight(vector_t pos) const;
+  bool IsInDangerZone(vector_t pos) const;
   template <bool compute_log_prob>
   std::tuple<Navigation2D, float, Observation, float> Step(
       const Action& action, const Observation* observation=nullptr) const;

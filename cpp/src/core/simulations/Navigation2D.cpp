@@ -10,7 +10,8 @@
 namespace simulations {
 
 Navigation2D::Action Navigation2D::Action::Rand() {
-  Action action{std::uniform_real_distribution<float>(0, 2 * PI)(Rng())};
+  //Action action{std::uniform_real_distribution<float>(0, 2 * PI)(Rng())};
+  Action action{0};
   return action;
 }
 
@@ -52,8 +53,15 @@ Sets the ego mean starting position and goal position for this simulation
 For now we fix the starting position just to test everything first
 TODO: create random positions bounded within the given regions
 */
-  EGO_START_MEAN = {50.0f, 300.0f};
-  GOAL = {650.0f, 300.0f};
+  float rand = std::uniform_real_distribution<float>(0, 1)(Rng());
+  if(rand <= 0.5f){
+    EGO_START_MEAN = RANDOM_START_REGION[0];
+  }
+  else{
+    EGO_START_MEAN = RANDOM_START_REGION[1];
+  }
+
+  GOAL = {30.0f, 0.0f};
 
   return SampleBeliefPrior();
 }
@@ -102,8 +110,12 @@ bool Navigation2D::CircleBoxCollision(vector_t pos, float wall_centre_x, float w
   if(centre_distance_x > wall_width/2.0f + EGO_RADIUS){return false;}
   if(centre_distance_y > wall_height/2.0f + EGO_RADIUS){return false;}
 
-  if(centre_distance_x <= wall_width/2.0f){return true;}
-  if(centre_distance_y <= wall_height/2.0f){return true;}
+  if(centre_distance_x <= wall_width/2.0f){std::cout << "Simple Collision 1 Happend" << std::endl;
+  std::cout << "agent position: " << pos.x << "," << pos.y << std::endl;
+  std::cout << "wall centre: " << wall_centre_x << "," << wall_centre_y << std::endl; 
+  return true;}
+  if(centre_distance_y <= wall_height/2.0f){std::cout << "Simple Collision 2 Happend" << std::endl;
+  return true;}
 
   float corner_distance = powf(centre_distance_x - wall_width/2.0f, 2) + powf(centre_distance_y - wall_height/2.0f, 2);
   return corner_distance <= powf(EGO_RADIUS, 2);
@@ -115,14 +127,22 @@ bool Navigation2D::CheckCollision(vector_t pos) const {
     float wall_width = abs(wall[0] - wall[2]);
     float wall_height = abs(wall[1] - wall[3]);
     float wall_centre_x = wall[0]+wall_width/2.0f; //centre is left corner + width/height
-    float wall_centre_y = wall[1]+wall_height/2.0f;
-    //std::cout<< "x:" << wall_centre_x << std::endl;
-    //std::cout<< "y:" << wall_centre_y << std::endl;
-    if(CircleBoxCollision(pos, wall_centre_x, wall_centre_y, wall_width, wall_height)){return true;}
-    //std::cout<<"No collision"<<std::endl;
+    float wall_centre_y = wall[1]-wall_height/2.0f;
+    if(CircleBoxCollision(pos, wall_centre_x, wall_centre_y, wall_width, wall_height)){
+      return true;
+    }
   }
-  //check collision with danger zones
-  //TODO: add danger zones 
+  return false;
+}
+
+bool Navigation2D::IsInDangerZone(vector_t pos) const {
+  for(const auto &zone : DANGER_ZONES){
+    float zone_width = abs(zone[0] - zone[2]);
+    float zone_height = abs(zone[1] - zone[3]);
+    float zone_centre_x = zone[0]+zone_width/2.0f; //centre is left corner + width/height
+    float zone_centre_y = zone[1]+zone_height/2.0f;
+    if(CircleBoxCollision(pos, zone_centre_x, zone_centre_y, zone_width, zone_height)){return true;}
+  }
   return false;
 }
 
@@ -144,19 +164,17 @@ std::tuple<Navigation2D, float, Navigation2D::Observation, float> Navigation2D::
   float reward;
 
   /* ====== Step 1: Update state.  ======*/
-  //agent motion contains noises
+  //agent motion contains noises and agent will stop at the current location if bumping into a wall
+  vector_t current_position = ego_agent_position;
   next_sim.ego_agent_position += DELTA * vector_t(EGO_SPEED, 0).rotated(action.orientation); 
   next_sim.ego_agent_position.x += std::normal_distribution<float>(0.0, MOTION_NOISE)(RngDet());
   next_sim.ego_agent_position.y += std::normal_distribution<float>(0.0, MOTION_NOISE)(RngDet());
-  next_sim.step++;
-  //update rewards based on the current step
-  if(CheckCollision(ego_agent_position)){
-    std::cout << "Collision happened!" << std::endl;
-    reward = COLLISION_REWARD;
-    next_sim._is_failure = true;
-    next_sim._is_terminal = true;
+  if(CheckCollision(next_sim.ego_agent_position)){
+    next_sim.ego_agent_position = current_position;
   }
-  else if((next_sim.ego_agent_position - GOAL).norm() <= EGO_RADIUS){
+  next_sim.step++;
+  //update rewards and other information based on the current step
+  if((next_sim.ego_agent_position - GOAL).norm() <= EGO_RADIUS){
     std::cout << "Reached Goal!" << std::endl;
     reward = GOAL_REWARD;
     next_sim._is_failure = false;
@@ -167,6 +185,12 @@ std::tuple<Navigation2D, float, Navigation2D::Observation, float> Navigation2D::
     reward = COLLISION_REWARD;
     next_sim._is_failure = true;
     next_sim._is_terminal = true;
+  }
+  else if(IsInDangerZone(next_sim.ego_agent_position)){
+    std::cout << "Touched Danger Zone!" << std::endl;
+    reward = COLLISION_REWARD;
+    next_sim._is_terminal = false;
+    next_sim._is_failure = false;
   }
   else{
     reward = STEP_REWARD;
@@ -197,8 +221,7 @@ std::tuple<Navigation2D, float, Navigation2D::Observation, float> Navigation2D::
     }
   }
   if constexpr (compute_log_prob){
-    //TODO: Figure out what this condition is doing... 
-    //compute_log_prob is set to false in DespotPlanner.h, so leave this code here for now should be fine.
+    //log_prob is for weights of each particle used in Sampling Importance Resampling
     if (in_light) {
       if (std::isnan(new_observation.ego_agent_position.x) && std::isnan(new_observation.ego_agent_position.y)) {
         log_prob += -std::numeric_limits<float>::infinity();
@@ -237,59 +260,63 @@ void Navigation2D::EncodeContext(list_t<float>& data) {
 cv::Mat Navigation2D::Render(const list_t<Navigation2D>& belief_sims,
     const list_t<list_t<Action>>& macro_actions, const vector_t& macro_action_start) const {
 
-  /*
-  constexpr float SCENARIO_MIN = -7.0f;
-  constexpr float SCENARIO_MAX = 7.0f;
-  constexpr float RESOLUTION = 0.02f;
+  constexpr float SCENARIO_MIN = -35.0f; //half width of the environment
+  constexpr float SCENARIO_MAX = 30.0f; //half height of the nevironment
+  constexpr float RESOLUTION = 0.1f;
   auto to_frame = [&](const vector_t& vector) {
     return cv::Point{
       static_cast<int>((vector.x - SCENARIO_MIN) / RESOLUTION),
       static_cast<int>((SCENARIO_MAX - vector.y) / RESOLUTION)
     };
   };
-  auto to_frame_dist = [&](float d) {
-    return static_cast<int>(d / RESOLUTION);
-  };
-  */
-  auto to_frame = [&](const vector_t& vector) {
-    return cv::Point{
-      static_cast<int>(vector.x),
-      static_cast<int>(vector.y)
-    };
-  };
 
   auto to_frame_dist = [&](float d) {
-    return static_cast<int>(d);
+    return static_cast<int>(d/RESOLUTION);
+  };
+
+  auto x_to_frame = [&](float x) {
+    return static_cast<int>((x - SCENARIO_MIN) / RESOLUTION);
+  };
+
+  auto y_to_frame = [&](float y){
+    return static_cast<int>((SCENARIO_MAX - y) / RESOLUTION);
   };
 
   //draw the frame
   cv::Mat frame(
-      static_cast<int>(600),
-      static_cast<int>(700),
+      static_cast<int>(abs(SCENARIO_MAX * 2)/RESOLUTION),
+      static_cast<int>(abs(SCENARIO_MIN * 2)/RESOLUTION),
       CV_8UC3,
       cv::Scalar(255, 255, 255));
 
   //draw walls
   for (const auto &wall : CLOSED_WALLS){
-    cv::Point p1(static_cast<int>(wall[0]), static_cast<int>(wall[1]));
-    cv::Point p2(static_cast<int>(wall[2]), static_cast<int>(wall[3]));
+    cv::Point p1(x_to_frame(wall[0]), y_to_frame(wall[1]));
+    cv::Point p2(x_to_frame(wall[2]), y_to_frame(wall[3]));
     cv::rectangle(frame, p1, p2,
               cv::Scalar(255, 0, 0),
               -1, cv::LINE_8);
   }
 
-  //TODO: draw danger zones
+  //draw danger zones
+  for (const auto &zone : DANGER_ZONES){
+    cv::Point p1(x_to_frame(zone[0]), y_to_frame(zone[1]));
+    cv::Point p2(x_to_frame(zone[2]), y_to_frame(zone[3]));
+    cv::rectangle(frame, p1, p2,
+              cv::Scalar(69, 69, 186),
+              -1, cv::LINE_8);
+  }
 
   //draw lights
   for(const auto &light : LIGHT_POSITION){
-    cv::Point p (static_cast<int>(light.x), static_cast<int>(light.y));
-    cv::circle(frame, p, LIGHT_RADIUS, cv::Scalar(104, 43, 159), -1, cv::LINE_AA);
+    cv::Point p (x_to_frame(light.x), y_to_frame(light.y));
+    cv::circle(frame, p,to_frame_dist(LIGHT_RADIUS), cv::Scalar(104, 43, 159), -1, cv::LINE_AA);
   }
 
   cv::drawMarker(frame, to_frame(EGO_START_MEAN),
-      cv::Scalar(255, 255, 0), cv::MARKER_TILTED_CROSS, 30, 2, cv::LINE_AA);
+      cv::Scalar(255, 255, 0), cv::MARKER_TILTED_CROSS, 15, 2, cv::LINE_AA);
   cv::drawMarker(frame, to_frame(GOAL),
-      cv::Scalar(0, 255, 0), cv::MARKER_TILTED_CROSS, 30, 2, cv::LINE_AA);
+      cv::Scalar(0, 255, 0), cv::MARKER_TILTED_CROSS, 15, 2, cv::LINE_AA);
 
   for (const simulations::Navigation2D& belief_sim : belief_sims) {
     cv::drawMarker(frame, to_frame(belief_sim.ego_agent_position), cv::Scalar(0, 255, 255),
