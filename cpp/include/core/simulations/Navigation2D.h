@@ -13,24 +13,32 @@ public:
   // Environment parameters.
 
   // a total of three walls as three vectors. Each vector stores the bounding corner coordinates of the wall.
-  static constexpr array_t<array_t<float, 4>, 3> CLOSED_WALLS{
+  static constexpr array_t<array_t<float, 4>, 5> CLOSED_WALLS{
     array_t<float, 4>{-25, 30, 5, 15},
     array_t<float, 4>{-25, 5, 5, -5},
-    array_t<float, 4>{-25, -15, 5, -30}
+    array_t<float, 4>{-25, -15, 5, -25},
+    array_t<float, 4>{10, 13, 35, 8},
+    array_t<float, 4>{15, -10, 35, -30}
   };
 
-  static constexpr array_t<array_t<float, 4>, 2> DANGER_ZONES{
+  static constexpr array_t<array_t<float, 4>, 4> DANGER_ZONES{
     array_t<float, 4>{-25, 15, 5, 13},
-    array_t<float, 4>{-25, 7, 5, 5}
+    array_t<float, 4>{-25, 7, 5, 5},
+    array_t<float, 4>{-25, -28, -5, -30},
+    array_t<float, 4>{33, 8, 35, -10}
   };
 
   //randomisation starting region
   static constexpr array_t<float, 4> STARTING_REGION{-30.0f, 15.0f, -30.0f, -15.0f};
-  static constexpr array_t<float, 4> GOAL_REGION{20.0f, 15.0f, 35.0f, -15.0f};
 
-  static constexpr array_t<vector_t, 2> LIGHT_POSITION{
-    vector_t{-30, -25},
-    vector_t{5, -5}
+  static constexpr array_t<vector_t, 7> LIGHT_POSITION{
+    vector_t{-33, -28},
+    vector_t{-25, -25},
+    vector_t{5, -5},
+    vector_t{5, -25},
+    vector_t{10, 8},
+    vector_t{13, -15},
+    vector_t{7, 28}
   };
   static constexpr float LIGHT_RADIUS = 2.0f;
 
@@ -50,6 +58,11 @@ public:
   static constexpr array_t<vector_t, 2> RANDOM_START_REGION{
     vector_t{-30, 10},
     vector_t{-30, -10}
+  };
+
+  static constexpr array_t<array_t<int, 4>, 2> GOAL_REGION{
+    array_t<int, 4>{15, 28, 30, 10},
+    array_t<int, 4>{15, 6, 30, -8}
   };
 
   // Belief tracking related parameters.

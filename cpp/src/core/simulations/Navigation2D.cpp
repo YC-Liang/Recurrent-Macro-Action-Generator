@@ -53,15 +53,37 @@ Sets the ego mean starting position and goal position for this simulation
 For now we fix the starting position just to test everything first
 TODO: create random positions bounded within the given regions
 */
-  float rand = std::uniform_real_distribution<float>(0, 1)(Rng());
-  if(rand <= 0.5f){
+  //initialise starting position, choosing between two
+  int rand = std::uniform_int_distribution<>(1, 10)(Rng());
+  if(rand <= 5){
     EGO_START_MEAN = RANDOM_START_REGION[0];
   }
   else{
     EGO_START_MEAN = RANDOM_START_REGION[1];
   }
 
-  GOAL = {30.0f, 0.0f};
+  //initialise goal position, pick a random position in either of the two regions
+  rand = std::uniform_int_distribution<>(1, 10)(Rng());
+  array_t<int, 4> goal_zone;
+  if(rand <= 5){
+    goal_zone = GOAL_REGION[0];
+  }
+  else{
+    goal_zone = GOAL_REGION[1];
+  }
+
+  int goal_zone_width = abs(goal_zone[0] - goal_zone[2]);
+  int goal_zone_height = abs(goal_zone[1] - goal_zone[3]);
+
+  int random_x = std::uniform_int_distribution<>(0, goal_zone_width)(Rng());
+  int random_y = std::uniform_int_distribution<>(0, goal_zone_height)(Rng());
+
+  int goal_x = goal_zone[0] + random_x;
+  int goal_y = goal_zone[1] - random_y;
+
+  //std::cout << "Picked goal position:" << goal_x << "," << goal_y << std::endl;
+
+  GOAL = {static_cast<float>(goal_x), static_cast<float>(goal_y)};
 
   return SampleBeliefPrior();
 }
