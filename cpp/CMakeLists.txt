@@ -90,6 +90,7 @@ message("Adding DESPOT (MAGIC) environments:")
 foreach(TASK
     LightDark
     PuckPush
+    Navigation2D
     )
   message("  DespotMagicEnv${TASK}")
   add_executable("DespotMagicEnv${TASK}" src/experiments/DespotMagicEnv.cpp)

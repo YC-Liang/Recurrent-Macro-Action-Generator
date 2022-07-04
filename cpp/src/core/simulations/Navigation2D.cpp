@@ -272,9 +272,23 @@ void Navigation2D::Encode(list_t<float>& data) const {
 }
 
 void Navigation2D::EncodeContext(list_t<float>& data) {
+  //encode goal position
   GOAL.Encode(data);
+  //encode light positions
   for(const auto &light : LIGHT_POSITION){
     light.Encode(data);
+  }
+  //encode closed wall bounding corners
+  for(const auto &wall : CLOSED_WALLS){
+    for(const auto &point : wall){
+      data.emplace_back(point);
+    }
+  }
+  //encode danger zone bounding corners
+  for(const auto &zone : DANGER_ZONES){
+    for(const auto &point : zone){
+      data.emplace_back(point);
+    }
   }
 }
 
