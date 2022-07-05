@@ -10,8 +10,8 @@
 namespace simulations {
 
 Navigation2D::Action Navigation2D::Action::Rand() {
-  //Action action{std::uniform_real_distribution<float>(0, 2 * PI)(Rng())};
-  Action action{0};
+  Action action{std::uniform_real_distribution<float>(0, 2 * PI)(Rng())};
+  //Action action{0};
   return action;
 }
 
@@ -132,12 +132,8 @@ bool Navigation2D::CircleBoxCollision(vector_t pos, float wall_centre_x, float w
   if(centre_distance_x > wall_width/2.0f + EGO_RADIUS){return false;}
   if(centre_distance_y > wall_height/2.0f + EGO_RADIUS){return false;}
 
-  if(centre_distance_x <= wall_width/2.0f){std::cout << "Simple Collision 1 Happend" << std::endl;
-  std::cout << "agent position: " << pos.x << "," << pos.y << std::endl;
-  std::cout << "wall centre: " << wall_centre_x << "," << wall_centre_y << std::endl; 
-  return true;}
-  if(centre_distance_y <= wall_height/2.0f){std::cout << "Simple Collision 2 Happend" << std::endl;
-  return true;}
+  if(centre_distance_x <= wall_width/2.0f){return true;}
+  if(centre_distance_y <= wall_height/2.0f){return true;}
 
   float corner_distance = powf(centre_distance_x - wall_width/2.0f, 2) + powf(centre_distance_y - wall_height/2.0f, 2);
   return corner_distance <= powf(EGO_RADIUS, 2);
@@ -197,19 +193,19 @@ std::tuple<Navigation2D, float, Navigation2D::Observation, float> Navigation2D::
   next_sim.step++;
   //update rewards and other information based on the current step
   if((next_sim.ego_agent_position - GOAL).norm() <= EGO_RADIUS){
-    std::cout << "Reached Goal!" << std::endl;
+    //std::cout << "Reached Goal!" << std::endl;
     reward = GOAL_REWARD;
     next_sim._is_failure = false;
     next_sim._is_terminal = true;
   }
   else if(next_sim.step == MAX_STEPS){
-    std::cout << "Reached maximum allowed steps." << std::endl;
+    //std::cout << "Reached maximum allowed steps." << std::endl;
     reward = COLLISION_REWARD;
     next_sim._is_failure = true;
     next_sim._is_terminal = true;
   }
   else if(IsInDangerZone(next_sim.ego_agent_position)){
-    std::cout << "Touched Danger Zone!" << std::endl;
+    //std::cout << "Touched Danger Zone!" << std::endl;
     reward = COLLISION_REWARD;
     next_sim._is_terminal = false;
     next_sim._is_failure = false;

@@ -12,6 +12,7 @@ parser.add_argument('--num-iterations', type=int, default=None)
 parser.add_argument('--not-belief-dependent', dest='belief_dependent', default=True, action='store_false')
 parser.add_argument('--not-context-dependent', dest='context_dependent', default=True, action='store_false')
 parser.add_argument('--output-dir', required=False, default=None)
+parser.add_argument('--log-dir', required=False, default=None)
 args = parser.parse_args()
 
 import os
@@ -51,7 +52,10 @@ SAVE_INTERVAL = 5000 if TASK == 'DriveHard' else 10000
 PRINT_INTERVAL = 100
 RECENT_HISTORY_LENGTH = 50
 OUTPUT_DIR = args.output_dir
+LOG_DIR = args.log_dir
 SAVE_PATH = 'learned_{}_{}/'.format(TASK, MACRO_LENGTH)
+LOG_SAVE_PATH = 'learned_{}_{}.csv'.format(TASK, MACRO_LENGTH)
+#MACRO_ACTION_LOG_PATH = '{}_macro_actions_dist.csv'.format(TASK)
 NUM_ITERATIONS = args.num_iterations
 
 NUM_CURVES = 8
@@ -66,6 +70,10 @@ elif TASK in ['PuckPush']:
 elif TASK in ['LightDark']:
     TARGET_ENTROPY = [-5.0] * NUM_CURVES
     LOG_ALPHA_INIT = [-3.0] * NUM_CURVES
+    LR = 1e-4
+elif TASK in ['Navigation2D']:
+    TARGET_ENTROPY = [-5.0] * NUM_CURVES
+    LOG_ALPHA_INIT = [-2.0] * NUM_CURVES
     LR = 1e-4
 LOG_ALPHA_MIN = -10.
 LOG_ALPHA_MAX = 20.
@@ -143,6 +151,16 @@ if __name__ == '__main__':
                 os.makedirs(OUTPUT_DIR)
             except:
                 pass
+
+    #create log file directory for saving logs
+    if LOG_DIR is not None:
+        if not os.path.exists(LOG_DIR):
+            try:
+                os.makedirs(LOG_DIR)
+            except:
+                pass
+        #empty any previous same log file 
+        open(LOG_DIR + '/' + LOG_SAVE_PATH, 'w').close()
 
 
     save_path = SAVE_PATH
@@ -295,6 +313,23 @@ if __name__ == '__main__':
                     print('Step {}: Recent Stat{} = {}'.format(step, i, np.mean(chained) if len(chained) > 0 else None))
                 print('Step {}: Elapsed = {} m'.format(step, (time.time() - start) / 60))
                 print('Alpha = ', torch.exp(log_alpha))
+
+            # save logs as csv file
+            if LOG_DIR != None:
+                with open(LOG_DIR + '/' + LOG_SAVE_PATH, 'a') as log_file:
+                    #step, reward, collision, value, GPU memory, Critic Net Loss, Macro Action Mean, Macro Action SD, Curve Entropy
+                    log_file.write(str(step) + ',')
+                    log_file.write(str(np.mean(recent_total_reward)) if len(recent_total_reward) > 0 else 'NULL')
+                    log_file.write(',')
+                    log_file.write(str(np.mean(recent_collisions)) if len(recent_collisions) > 0 else 'NULL')
+                    log_file.write(',')
+                    log_file.write(str(np.mean(recent_values)) if len(recent_values) > 0 else 'NULL')
+                    log_file.write(',')
+                    if torch.cuda.device_count() > 0:
+                        log_file.write(str(torch.cuda.memory_allocated(0)))
+                        log_file.write(',')
+                    log_file.write(str(critic_loss.detach().item()))
+                    log_file.write('\n')
 
             # Save models.
             if step % SAVE_INTERVAL == 0:
