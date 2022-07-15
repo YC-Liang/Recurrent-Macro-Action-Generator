@@ -5,6 +5,7 @@ parser = argparse.ArgumentParser(description='Macro-DESPOT (MAGIC) Evaluation Ar
 parser.add_argument('--task', required=True, help='Task')
 parser.add_argument('--macro-length', type=int, required=True, help='Macro-action length')
 parser.add_argument('--model-path', required=False, help='Path to model file')
+parser.add_argument('--model-index', type=int, default=None, help='Index of model to benchmark. Leave empty to benchmark all in folder.')
 parser.add_argument('--not-belief-dependent', dest='belief_dependent', default=True, action='store_false')
 parser.add_argument('--not-context-dependent', dest='context_dependent', default=True, action='store_false')
 args = parser.parse_args()
@@ -29,7 +30,8 @@ BELIEF_DEPENDENT = args.belief_dependent
 CONTEXT_DEPENDENT = args.context_dependent
 
 if __name__ == '__main__':
-    model_path = args.model_path
+    model_path = args.model_path + '/gen_model.pt.{:08d}'
+    model_path = model_path.format(args.model_index)
 
     print('Loading model... ({})'.format(model_path))
     with torch.no_grad():

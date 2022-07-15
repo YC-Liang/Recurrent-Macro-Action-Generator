@@ -20,6 +20,7 @@ import sys
 sys.path.append('{}/../'.format(os.path.dirname(os.path.realpath(__file__))))
 from environment import Environment, Response
 from models import MAGICGenNet, MAGICCriticNet, MAGICGenNet_DriveHard, MAGICCriticNet_DriveHard
+from models import MAGICGen_Autoencoder
 from replay import ReplayBuffer
 from utils import PARTICLE_SIZES, CONTEXT_SIZES
 
@@ -176,7 +177,7 @@ if __name__ == '__main__':
         gen_model = MAGICGenNet_DriveHard(MACRO_LENGTH, CONTEXT_DEPENDENT, BELIEF_DEPENDENT).float().to(device)
         critic_model = MAGICCriticNet_DriveHard(MACRO_LENGTH, True, True).float().to(device)
     else:
-        gen_model = MAGICGenNet(CONTEXT_SIZE, PARTICLE_SIZE, CONTEXT_DEPENDENT, BELIEF_DEPENDENT).float().to(device)
+        gen_model = MAGICGen_Autoencoder(CONTEXT_SIZE, PARTICLE_SIZE, CONTEXT_DEPENDENT, BELIEF_DEPENDENT).float().to(device)
         critic_model = MAGICCriticNet(CONTEXT_SIZE, PARTICLE_SIZE, True, True).float().to(device)
     gen_model_optimizer = optim.Adam(gen_model.parameters(), lr=LR)
     critic_model_optimizer = optim.Adam(critic_model.parameters(), lr=LR)

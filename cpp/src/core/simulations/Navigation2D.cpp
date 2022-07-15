@@ -12,6 +12,7 @@ namespace simulations {
 Navigation2D::Action Navigation2D::Action::Rand() {
   Action action{std::uniform_real_distribution<float>(0, 2 * PI)(Rng())};
   //Action action{0};
+  //Action action{PI/2.0f};
   return action;
 }
 
@@ -62,7 +63,16 @@ TODO: create random positions bounded within the given regions
     EGO_START_MEAN = RANDOM_START_REGION[1];
   }
 
-  //initialise goal position, pick a random position in either of the two regions
+  //initialise goal position, pick a random position uniformly in either of the two regions
+  rand = std::uniform_int_distribution<>(1, 10)(Rng());
+  if(rand <= 5){
+    GOAL = GOAL_REGION[0];
+  }
+  else{
+    GOAL = GOAL_REGION[1];
+  }
+
+  /*
   rand = std::uniform_int_distribution<>(1, 10)(Rng());
   array_t<int, 4> goal_zone;
   if(rand <= 5){
@@ -84,6 +94,7 @@ TODO: create random positions bounded within the given regions
   //std::cout << "Picked goal position:" << goal_x << "," << goal_y << std::endl;
 
   GOAL = {static_cast<float>(goal_x), static_cast<float>(goal_y)};
+    */
 
   return SampleBeliefPrior();
 }
@@ -149,6 +160,19 @@ bool Navigation2D::CheckCollision(vector_t pos) const {
     if(CircleBoxCollision(pos, wall_centre_x, wall_centre_y, wall_width, wall_height)){
       return true;
     }
+  }
+  //check collision with the map edges i.e. the agent cannot move outside of the map
+  if(pos.x + EGO_RADIUS >= MAP_HALF_WIDTH){
+    return true;
+  }
+  else if(pos.x - EGO_RADIUS <= -1.0f * MAP_HALF_WIDTH){
+    return true;
+  }
+  else if(pos.y + EGO_RADIUS >= MAP_HALF_HEIGHT){
+    return true;
+  }
+  else if(pos.y - EGO_RADIUS <= -1.0f * MAP_HALF_HEIGHT){
+    return true;
   }
   return false;
 }

@@ -115,6 +115,17 @@ foreach(TASK
   target_compile_definitions("TaskTest${TASK}" PRIVATE -D"SIM_${TASK}")
   target_link_libraries("TaskTest${TASK}" macro_nav)
 endforeach()
+
+message("Adding learning tests:")
+foreach(TASK
+    Navigation2D
+    )
+  message("  LearningVisualisation${TASK}")
+  add_executable("LearningVisualisation${TASK}" src/experiments/TaskTest.cpp)
+  target_compile_definitions("LearningVisualisation${TASK}" PRIVATE -D"SIM_${TASK}")
+  target_link_libraries("LearningVisualisation${TASK}" macro_nav)
+endforeach()
+
 message("  TaskTestDriveHard")
 add_executable("TaskTestDriveHard" src/experiments/TaskTestDriveHard.cpp)
 target_compile_definitions("TaskTestDriveHard" PRIVATE -D"SIM_DriveHard")

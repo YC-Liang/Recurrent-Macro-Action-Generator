@@ -11,6 +11,8 @@ class Navigation2D {
 public:
 
   // Environment parameters.
+  static constexpr float MAP_HALF_HEIGHT = 30.0f;
+  static constexpr float MAP_HALF_WIDTH = 35.0f;
 
   // a total of three walls as three vectors. Each vector stores the bounding corner coordinates of the wall.
   static constexpr array_t<array_t<float, 4>, 5> CLOSED_WALLS{
@@ -33,9 +35,9 @@ public:
 
   static constexpr array_t<vector_t, 7> LIGHT_POSITION{
     vector_t{-33, -28},
-    vector_t{-25, -25},
-    vector_t{5, -5},
-    vector_t{5, -25},
+    vector_t{-26, -26},
+    vector_t{6, -6},
+    vector_t{6, -26},
     vector_t{10, 8},
     vector_t{13, -15},
     vector_t{7, 28}
@@ -60,9 +62,9 @@ public:
     vector_t{-30, -10}
   };
 
-  static constexpr array_t<array_t<int, 4>, 2> GOAL_REGION{
-    array_t<int, 4>{15, 28, 30, 10},
-    array_t<int, 4>{15, 6, 30, -8}
+  static constexpr array_t<vector_t, 2> GOAL_REGION{
+    vector_t{20,-1},
+    vector_t{15, 25}
   };
 
   // Belief tracking related parameters.
