@@ -73,9 +73,9 @@ public:
   // Planning related parameters.
   static constexpr size_t MAX_STEPS = 250;
   static constexpr float STEP_REWARD = -0.1f;
-  static constexpr float COLLISION_REWARD = -100;
-  static constexpr float GOAL_REWARD = 100;
-  static constexpr float GAMMA = 0.98f;
+  static constexpr float COLLISION_REWARD = -20;
+  static constexpr float GOAL_REWARD = 1000;
+  static constexpr float GAMMA = 0.99f;
   static constexpr float WORST_REWARD = COLLISION_REWARD;
   static constexpr size_t SEARCH_DEPTH = 250;
   static constexpr size_t PLANNING_TIME = 400;
