@@ -24,7 +24,7 @@ public:
   };
 
   static constexpr array_t<array_t<float, 4>, 4> DANGER_ZONES{
-    array_t<float, 4>{-25, 15, 5, 13},
+    array_t<float, 4>{-25, 15, 5, 13}, //center is -10, 14
     array_t<float, 4>{-25, 7, 5, 5},
     array_t<float, 4>{-25, -28, -5, -30},
     array_t<float, 4>{33, 8, 35, -10}
@@ -50,8 +50,8 @@ public:
   static constexpr float DELTA = 1.0f;
 
   static constexpr float EGO_START_STD = 1.0f;
-  static constexpr float OBSERVATION_NOISE = 1.0f;
-  static constexpr float MOTION_NOISE = 1.0f;
+  static constexpr float OBSERVATION_NOISE = 0.1f;
+  static constexpr float MOTION_NOISE = 0.1f;
 
   // Randomization over initialization and context.
   inline static vector_t EGO_START_MEAN;
@@ -62,19 +62,22 @@ public:
     vector_t{-30, -10}
   };
 
-  static constexpr array_t<vector_t, 2> GOAL_REGION{
-    vector_t{20,-1},
-    vector_t{15, 25}
+  
+  static constexpr array_t<array_t<float, 4>, 3> GOAL_REGION{
+    array_t<float, 4>{5, 30, 10, -30},
+    array_t<float, 4>{10, 30, 30, 13},
+    array_t<float, 4>{10, 8, 30, -10}
   };
+  
 
   // Belief tracking related parameters.
   static constexpr size_t BELIEF_NUM_PARTICLES = 10000;
 
   // Planning related parameters.
   static constexpr size_t MAX_STEPS = 250;
-  static constexpr float STEP_REWARD = -0.1f;
-  static constexpr float COLLISION_REWARD = -20;
-  static constexpr float GOAL_REWARD = 1000;
+  static constexpr float STEP_REWARD = -0.2f;
+  static constexpr float COLLISION_REWARD = -100;
+  static constexpr float GOAL_REWARD = 100;
   static constexpr float GAMMA = 0.99f;
   static constexpr float WORST_REWARD = COLLISION_REWARD;
   static constexpr size_t SEARCH_DEPTH = 250;

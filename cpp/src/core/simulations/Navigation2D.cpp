@@ -13,6 +13,7 @@ Navigation2D::Action Navigation2D::Action::Rand() {
   Action action{std::uniform_real_distribution<float>(0, 2 * PI)(Rng())};
   //Action action{0};
   //Action action{PI/2.0f};
+  //Action action{PI/6.0f};
   return action;
 }
 
@@ -52,9 +53,8 @@ Navigation2D Navigation2D::CreateRandom() {
 /*
 Sets the ego mean starting position and goal position for this simulation
 For now we fix the starting position just to test everything first
-TODO: create random positions bounded within the given regions
 */
-  //initialise starting position, choosing between two
+  //initialise starting position, choosing between two entries
   int rand = std::uniform_int_distribution<>(1, 10)(Rng());
   if(rand <= 5){
     EGO_START_MEAN = RANDOM_START_REGION[0];
@@ -63,38 +63,13 @@ TODO: create random positions bounded within the given regions
     EGO_START_MEAN = RANDOM_START_REGION[1];
   }
 
-  //initialise goal position, pick a random position uniformly in either of the two regions
-  rand = std::uniform_int_distribution<>(1, 10)(Rng());
-  if(rand <= 5){
-    GOAL = GOAL_REGION[0];
-  }
-  else{
-    GOAL = GOAL_REGION[1];
-  }
+  //initialise goal position, pick a random position uniformly 
+  
+  size_t random_index = static_cast<size_t>(std::uniform_int_distribution<>(0, 2)(Rng()));
+  auto random_region = GOAL_REGION[random_index];
+  GOAL.x = float(std::uniform_real_distribution<>(random_region[0], random_region[2])(Rng()));
+  GOAL.y = float(std::uniform_real_distribution<>(random_region[1], random_region[3])(Rng()));
 
-  /*
-  rand = std::uniform_int_distribution<>(1, 10)(Rng());
-  array_t<int, 4> goal_zone;
-  if(rand <= 5){
-    goal_zone = GOAL_REGION[0];
-  }
-  else{
-    goal_zone = GOAL_REGION[1];
-  }
-
-  int goal_zone_width = abs(goal_zone[0] - goal_zone[2]);
-  int goal_zone_height = abs(goal_zone[1] - goal_zone[3]);
-
-  int random_x = std::uniform_int_distribution<>(0, goal_zone_width)(Rng());
-  int random_y = std::uniform_int_distribution<>(0, goal_zone_height)(Rng());
-
-  int goal_x = goal_zone[0] + random_x;
-  int goal_y = goal_zone[1] - random_y;
-
-  //std::cout << "Picked goal position:" << goal_x << "," << goal_y << std::endl;
-
-  GOAL = {static_cast<float>(goal_x), static_cast<float>(goal_y)};
-    */
 
   return SampleBeliefPrior();
 }
@@ -181,8 +156,8 @@ bool Navigation2D::IsInDangerZone(vector_t pos) const {
   for(const auto &zone : DANGER_ZONES){
     float zone_width = abs(zone[0] - zone[2]);
     float zone_height = abs(zone[1] - zone[3]);
-    float zone_centre_x = zone[0]+zone_width/2.0f; //centre is left corner + width/height
-    float zone_centre_y = zone[1]+zone_height/2.0f;
+    float zone_centre_x = zone[0]+zone_width/2.0f; //x centre is left corner x + width/2
+    float zone_centre_y = zone[1]-zone_height/2.0f; //y centre is left corner y - height/2
     if(CircleBoxCollision(pos, zone_centre_x, zone_centre_y, zone_width, zone_height)){return true;}
   }
   return false;
@@ -214,9 +189,14 @@ std::tuple<Navigation2D, float, Navigation2D::Observation, float> Navigation2D::
   if(CheckCollision(next_sim.ego_agent_position)){
     next_sim.ego_agent_position = current_position;
   }
-  next_sim.step++;
   //update rewards and other information based on the current step
-  if((next_sim.ego_agent_position - GOAL).norm() <= EGO_RADIUS){
+  /*
+  if(!compute_log_prob){
+    std::cout << "Step number: " << next_sim.step << std::endl;
+    std::cout << "Current agent position: (" << next_sim.ego_agent_position.x << ", " <<next_sim.ego_agent_position.y << ")" << std::endl;
+  }*/
+
+  if((next_sim.ego_agent_position - GOAL).norm() <= 1.5f*EGO_RADIUS){
     //std::cout << "Reached Goal!" << std::endl;
     reward = GOAL_REWARD;
     next_sim._is_failure = false;
@@ -229,16 +209,26 @@ std::tuple<Navigation2D, float, Navigation2D::Observation, float> Navigation2D::
     next_sim._is_terminal = true;
   }
   else if(IsInDangerZone(next_sim.ego_agent_position)){
-    //std::cout << "Touched Danger Zone!" << std::endl;
+    /*
+    if(!compute_log_prob){
+      std::cout << "In Danger Zone!" << std::endl;
+    }*/
+
     reward = COLLISION_REWARD;
     next_sim._is_terminal = false;
     next_sim._is_failure = false;
+    //std::cout << "step reward 1: " << reward << std::endl;
   }
   else{
+    /*
+    if(!compute_log_prob){
+      std::cout << "Proceed normally..." << std::endl;
+    }*/
     reward = STEP_REWARD;
     next_sim._is_failure = false;
     next_sim._is_terminal = false;
   }
+  next_sim.step++;
 
   /* ====== Step 2: Generate observation. ====== */
   Observation new_observation;
@@ -279,6 +269,7 @@ std::tuple<Navigation2D, float, Navigation2D::Observation, float> Navigation2D::
       }
     }
   }
+  //std::cout << "Step reward 2: " << reward << std::endl;
   return std::make_tuple(next_sim, reward, observation ? Observation() : new_observation, log_prob);
 }
 template std::tuple<Navigation2D, float, Navigation2D::Observation, float> Navigation2D::Step<true>(

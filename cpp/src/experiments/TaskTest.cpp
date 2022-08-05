@@ -24,8 +24,15 @@ int main(int argc, char** argv) {
     cv::waitKey(1000 * ExpSimulation::DELTA);
 
     auto action = ExpSimulation::Action::Rand();
-    auto result = sim.Step<true>(action);
+    auto result = sim.Step<false>(action);
     belief.Update(action, std::get<2>(result));
+    //float reward = std::get<1>(result);
+    /*
+    if (std::abs(reward) - 0.2f >= 0.1f){
+      std::cout << "True Step reward:" << reward << std::endl;
+    }*/
+    //std::cout << "Number of step: " << sim.step << std::endl;
+    //std::cout << "True step reward: " << reward << std::endl;
     sim = std::get<0>(result);
   }
 }

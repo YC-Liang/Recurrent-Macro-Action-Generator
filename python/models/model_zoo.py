@@ -6,7 +6,7 @@ import numpy as np
 from power_spherical import PowerSpherical
 
 MACRO_CURVE_ORDER = 3
-NUM_CURVES = 4
+NUM_CURVES = 8
 EPS = 0.01
 
 #Overview

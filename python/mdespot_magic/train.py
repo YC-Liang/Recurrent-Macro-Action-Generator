@@ -12,6 +12,7 @@ parser.add_argument('--num-iterations', type=int, default=None)
 parser.add_argument('--not-belief-dependent', dest='belief_dependent', default=True, action='store_false')
 parser.add_argument('--not-context-dependent', dest='context_dependent', default=True, action='store_false')
 parser.add_argument('--output-dir', required=False, default=None)
+parser.add_argument('--gen-model-name', required = False, default = "Vanilla")
 parser.add_argument('--log-dir', required=False, default=None)
 args = parser.parse_args()
 
@@ -20,7 +21,7 @@ import sys
 sys.path.append('{}/../'.format(os.path.dirname(os.path.realpath(__file__))))
 from environment import Environment, Response
 from models import MAGICGenNet, MAGICCriticNet, MAGICGenNet_DriveHard, MAGICCriticNet_DriveHard
-from models import MAGICGen_Autoencoder
+from models import MAGICGen_Autoencoder, MAGICGen_Encode_RNN
 from replay import ReplayBuffer
 from utils import PARTICLE_SIZES, CONTEXT_SIZES
 
@@ -53,13 +54,18 @@ SAVE_INTERVAL = 5000 if TASK == 'DriveHard' else 10000
 PRINT_INTERVAL = 100
 RECENT_HISTORY_LENGTH = 50
 OUTPUT_DIR = args.output_dir
+GEN_MODEL = args.gen_model_name
+GEN_MODELS = ['Vanilla', 'Autoencoder', 'RNN-Autoencoder']
 LOG_DIR = args.log_dir
 SAVE_PATH = 'learned_{}_{}/'.format(TASK, MACRO_LENGTH)
 LOG_SAVE_PATH = 'learned_{}_{}.csv'.format(TASK, MACRO_LENGTH)
 #MACRO_ACTION_LOG_PATH = '{}_macro_actions_dist.csv'.format(TASK)
 NUM_ITERATIONS = args.num_iterations
+NUM_CURVES = 8  #number of actions in a macro action
 
-NUM_CURVES = 8
+if GEN_MODEL not in GEN_MODELS:
+    raise Exception("Invalid generative model type")
+
 if TASK in ['DriveHard']:
     TARGET_ENTROPY = np.array([-1.0] * 14, dtype=np.float32)
     LOG_ALPHA_INIT = [0.0] * 14
@@ -174,10 +180,19 @@ if __name__ == '__main__':
     print('Loading models...')
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     if TASK in ['DriveHard']:
+        #TODO: Change model according to the command line input
         gen_model = MAGICGenNet_DriveHard(MACRO_LENGTH, CONTEXT_DEPENDENT, BELIEF_DEPENDENT).float().to(device)
         critic_model = MAGICCriticNet_DriveHard(MACRO_LENGTH, True, True).float().to(device)
     else:
-        gen_model = MAGICGen_Autoencoder(CONTEXT_SIZE, PARTICLE_SIZE, CONTEXT_DEPENDENT, BELIEF_DEPENDENT).float().to(device)
+        if GEN_MODEL == 'Vanilla':
+            gen_model = MAGICGenNet(CONTEXT_SIZE, PARTICLE_SIZE, CONTEXT_DEPENDENT, BELIEF_DEPENDENT).float().to(device)
+        elif GEN_MODEL == 'Autoencoder':
+            gen_model = MAGICGen_Autoencoder(CONTEXT_SIZE, PARTICLE_SIZE, CONTEXT_DEPENDENT, BELIEF_DEPENDENT).float().to(device)
+        elif GEN_MODEL == 'RNN-Autoencoder':
+            gen_model = MAGICGen_Encode_RNN(CONTEXT_SIZE, PARTICLE_SIZE, CONTEXT_DEPENDENT, BELIEF_DEPENDENT).float().to(device)
+        else:
+            raise Exception("Invalid generative model type")
+
         critic_model = MAGICCriticNet(CONTEXT_SIZE, PARTICLE_SIZE, True, True).float().to(device)
     gen_model_optimizer = optim.Adam(gen_model.parameters(), lr=LR)
     critic_model_optimizer = optim.Adam(critic_model.parameters(), lr=LR)
@@ -204,6 +219,8 @@ if __name__ == '__main__':
     recent_values = []
     recent_stats = [[] for _ in range(5)]
     replay_buffer = ReplayBuffer(REPLAY_MAX)
+    hidden_state = torch.tensor([], device=device)
+    cell_state = torch.tensor([], device=device)
 
     while True:
 
@@ -221,9 +238,15 @@ if __name__ == '__main__':
                     params = rand_macro_action_set(8, 3) #8 macro action, 3 points
             else:
                 with torch.no_grad():
-                    (macro_actions, macro_actions_entropy) = gen_model.rsample(
-                            torch.tensor(instruction_data[0], dtype=torch.float, device=device).unsqueeze(0),
-                            torch.tensor(instruction_data[1], dtype=torch.float, device=device).unsqueeze(0))
+                    if GEN_MODEL != 'RNN-Autoencoder':
+                        (macro_actions, macro_actions_entropy) = gen_model.rsample(
+                                torch.tensor(instruction_data[0], dtype=torch.float, device=device).unsqueeze(0),
+                                torch.tensor(instruction_data[1], dtype=torch.float, device=device).unsqueeze(0))
+                    else:
+                        (macro_actions, macro_actions_entropy), hidden_state, cell_state = gen_model.rsample(
+                                torch.tensor(instruction_data[0], dtype=torch.float, device=device).unsqueeze(0),
+                                torch.tensor(instruction_data[1], dtype=torch.float, device=device).unsqueeze(0),
+                                hidden_state, cell_state)
                     params = macro_actions.squeeze(0).cpu().numpy()
             socket.send_pyobj(params)
 
@@ -241,6 +264,10 @@ if __name__ == '__main__':
                 if instruction_data[3][i] is not None:
                     recent_stats[i].append(instruction_data[3][i])
                     recent_stats[i] = recent_stats[i][-RECENT_HISTORY_LENGTH:]
+
+            #clear LSTM memory for a new episode
+            hidden_state = torch.tensor([], device=device)
+            cell_state = torch.tensor([], device=device)
 
         elif instruction == 'ADD_EXPERIENCE':
 
@@ -275,7 +302,13 @@ if __name__ == '__main__':
             critic_model_optimizer.step()
 
             # Update params model.
-            (macro_actions, macro_actions_entropy) = gen_model.rsample(sampled_contexts, sampled_states)
+            if GEN_MODEL != 'RNN-Autoencoder':
+                (macro_actions, macro_actions_entropy) = gen_model.rsample(sampled_contexts, sampled_states)
+            else:
+                #For RNN, we require the LSTM to use new memories since DRQN reports in the long run, LSTM still learns the sequential relationship
+                temp_h = torch.tensor([], device=device)
+                temp_c = torch.tensor([], device=device)
+                (macro_actions, macro_actions_entropy),_, _ = gen_model.rsample(sampled_contexts, sampled_states, temp_h, temp_c)
             (value, sd) = critic_model(sampled_contexts, sampled_states, macro_actions)
             critic_model_optimizer.zero_grad()
             gen_model_optimizer.zero_grad()
