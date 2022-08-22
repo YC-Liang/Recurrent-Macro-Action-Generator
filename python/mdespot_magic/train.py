@@ -21,7 +21,7 @@ import sys
 sys.path.append('{}/../'.format(os.path.dirname(os.path.realpath(__file__))))
 from environment import Environment, Response
 from models import MAGICGenNet, MAGICCriticNet, MAGICGenNet_DriveHard, MAGICCriticNet_DriveHard
-from models import MAGICGen_Autoencoder, MAGICGen_Encode_RNN
+from models import MAGICGen_Autoencoder, MAGICGen_Encode_RNN, MAGICGen_RNN, MAGICCritic_RNN, MAGICCritic_Autoencoder
 from replay import ReplayBuffer
 from utils import PARTICLE_SIZES, CONTEXT_SIZES
 
@@ -55,7 +55,7 @@ PRINT_INTERVAL = 100
 RECENT_HISTORY_LENGTH = 50
 OUTPUT_DIR = args.output_dir
 GEN_MODEL = args.gen_model_name
-GEN_MODELS = ['Vanilla', 'Autoencoder', 'RNN-Autoencoder']
+GEN_MODELS = ['Vanilla', 'Autoencoder', 'RNN', 'RNN-Autoencoder']
 LOG_DIR = args.log_dir
 SAVE_PATH = 'learned_{}_{}/'.format(TASK, MACRO_LENGTH)
 LOG_SAVE_PATH = 'learned_{}_{}.csv'.format(TASK, MACRO_LENGTH)
@@ -97,6 +97,7 @@ def environment_process(port):
 
     steps = 0
     total_reward = 0
+    collision_number = 0
 
     while True:
 
@@ -132,14 +133,17 @@ def environment_process(port):
         total_reward += response.undiscounted_reward
 
         # Upload trajectory statistics.
+        if response.is_failure:
+            collision_number += 1;
+
         if response.is_terminal:
-            collision = response.is_failure
             socket.send_pyobj((
                 'ADD_TRAJECTORY_RESULT',
-                steps, total_reward, collision, response.stats))
+                steps, total_reward, collision_number, response.stats))
             socket.recv_pyobj()
             steps = 0
             total_reward = 0
+            collision_number = 0
 
 def rand_macro_action_set(num_macros, macro_order):
     x = np.random.normal(size=(num_macros, macro_order * 2))
@@ -190,6 +194,8 @@ if __name__ == '__main__':
             gen_model = MAGICGen_Autoencoder(CONTEXT_SIZE, PARTICLE_SIZE, CONTEXT_DEPENDENT, BELIEF_DEPENDENT).float().to(device)
         elif GEN_MODEL == 'RNN-Autoencoder':
             gen_model = MAGICGen_Encode_RNN(CONTEXT_SIZE, PARTICLE_SIZE, CONTEXT_DEPENDENT, BELIEF_DEPENDENT).float().to(device)
+        elif GEN_MODEL == 'RNN':
+            gen_model = MAGICGen_RNN(CONTEXT_SIZE, PARTICLE_SIZE, CONTEXT_DEPENDENT, BELIEF_DEPENDENT).float().to(device)
         else:
             raise Exception("Invalid generative model type")
 
@@ -238,7 +244,7 @@ if __name__ == '__main__':
                     params = rand_macro_action_set(8, 3) #8 macro action, 3 points
             else:
                 with torch.no_grad():
-                    if GEN_MODEL != 'RNN-Autoencoder':
+                    if GEN_MODEL not in ['RNN-Autoencoder', 'RNN']:
                         (macro_actions, macro_actions_entropy) = gen_model.rsample(
                                 torch.tensor(instruction_data[0], dtype=torch.float, device=device).unsqueeze(0),
                                 torch.tensor(instruction_data[1], dtype=torch.float, device=device).unsqueeze(0))
@@ -302,7 +308,7 @@ if __name__ == '__main__':
             critic_model_optimizer.step()
 
             # Update params model.
-            if GEN_MODEL != 'RNN-Autoencoder':
+            if GEN_MODEL not in ['RNN-Autoencoder', 'RNN']:
                 (macro_actions, macro_actions_entropy) = gen_model.rsample(sampled_contexts, sampled_states)
             else:
                 #For RNN, we require the LSTM to use new memories since DRQN reports in the long run, LSTM still learns the sequential relationship

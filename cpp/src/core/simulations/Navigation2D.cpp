@@ -10,10 +10,10 @@
 namespace simulations {
 
 Navigation2D::Action Navigation2D::Action::Rand() {
-  Action action{std::uniform_real_distribution<float>(0, 2 * PI)(Rng())};
+  //Action action{std::uniform_real_distribution<float>(0, 2 * PI)(Rng())};
   //Action action{0};
   //Action action{PI/2.0f};
-  //Action action{PI/6.0f};
+  Action action{PI+PI/2.2f};
   return action;
 }
 
@@ -70,18 +70,34 @@ For now we fix the starting position just to test everything first
   GOAL.x = float(std::uniform_real_distribution<>(random_region[0], random_region[2])(Rng()));
   GOAL.y = float(std::uniform_real_distribution<>(random_region[1], random_region[3])(Rng()));
 
+  return SampleInitial();
+}
 
-  return SampleBeliefPrior();
+Navigation2D Navigation2D::SampleInitial() {
+  Navigation2D sim;
+  sim.ego_agent_position.x = std::normal_distribution<float>(
+      EGO_START_MEAN.x, EGO_START_STD)(Rng());
+  sim.ego_agent_position.y =std::normal_distribution<float>(
+      EGO_START_MEAN.y, EGO_START_STD)(Rng());
+  return sim;
 }
 
 /* ====== Belief related functions ======*/
 
 Navigation2D Navigation2D::SampleBeliefPrior() {
   Navigation2D sim;
+  int rand = std::uniform_int_distribution<>(1, 10)(Rng());
+  vector_t belief_start_mean;
+  if(rand <= 5){
+    belief_start_mean = RANDOM_START_REGION[0];
+  }
+  else{
+    belief_start_mean = RANDOM_START_REGION[1];
+  }
   sim.ego_agent_position.x = std::normal_distribution<float>(
-      EGO_START_MEAN.x, EGO_START_STD)(Rng());
+      belief_start_mean.x, EGO_START_STD)(Rng());
   sim.ego_agent_position.y =std::normal_distribution<float>(
-      EGO_START_MEAN.y, EGO_START_STD)(Rng());
+      belief_start_mean.y, EGO_START_STD)(Rng());
   return sim;
 }
 
@@ -216,7 +232,7 @@ std::tuple<Navigation2D, float, Navigation2D::Observation, float> Navigation2D::
 
     reward = COLLISION_REWARD;
     next_sim._is_terminal = false;
-    next_sim._is_failure = false;
+    next_sim._is_failure = true;
     //std::cout << "step reward 1: " << reward << std::endl;
   }
   else{

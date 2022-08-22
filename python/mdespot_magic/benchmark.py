@@ -12,6 +12,7 @@ parser.add_argument('--models-folder', required=True,
                     help='Path to folder containing models')
 parser.add_argument('--model-index', type=int, default=None,
                     help='Index of model to benchmark. Leave empty to benchmark all in folder.')
+parser.add_argument('--gen-model-name', required = False, default = "Vanilla")
 parser.add_argument('--not-belief-dependent', dest='belief_dependent', default=True, action='store_false')
 parser.add_argument('--not-context-dependent', dest='context_dependent', default=True, action='store_false')
 parser.add_argument('--target-se', type=float, default=None, help='Target standard error  (default: None)')
@@ -23,6 +24,7 @@ sys.path.append('{}/../'.format(os.path.dirname(os.path.realpath(__file__))))
 
 from environment import Environment, Response
 from models import MAGICGenNet, MAGICCriticNet, MAGICGenNet_DriveHard, MAGICCriticNet_DriveHard
+from models import MAGICGen_Autoencoder, MAGICGen_Encode_RNN, MAGICGen_RNN
 from utils import Statistics, PARTICLE_SIZES, CONTEXT_SIZES
 
 import multiprocessing
@@ -41,6 +43,11 @@ CONTEXT_SIZE = CONTEXT_SIZES[TASK] if TASK in CONTEXT_SIZES else None
 GAMMA = 0.98
 BELIEF_DEPENDENT = args.belief_dependent
 CONTEXT_DEPENDENT = args.context_dependent
+GEN_MODEL = args.gen_model_name
+GEN_MODELS = ['Vanilla', 'Autoencoder', 'RNN', 'RNN-Autoencoder']
+
+if GEN_MODEL not in GEN_MODELS:
+    raise Exception("Invalid generative model type")
 
 NUM_ENVIRONMENTS = args.num_env
 ZMQ_ADDRESS = 'tcp://127.0.0.1'
@@ -62,7 +69,7 @@ def environment_process(port):
         cycles = 0
         steps = 0
         total_reward = 0
-        collision = None
+        collision = 0
         macro_length = 0
         num_nodes = None
         depth = None
@@ -95,9 +102,10 @@ def environment_process(port):
             if response.depth is not None:
                 depth = response.depth if depth is None else max(depth, response.depth)
             steps += response.steps
+            if response.is_failure:
+                collision += 1
             if response.is_terminal:
                 stats = response.stats
-                collision = response.is_failure
                 break
 
         # Upload trajectory statistics.
@@ -118,7 +126,16 @@ if __name__ == '__main__':
     if TASK in ['DriveHard']:
         gen_model = MAGICGenNet_DriveHard(MACRO_LENGTH, CONTEXT_DEPENDENT, BELIEF_DEPENDENT).to(device).float()
     else:
-        gen_model = MAGICGenNet(CONTEXT_SIZE, PARTICLE_SIZE, CONTEXT_DEPENDENT, BELIEF_DEPENDENT).to(device).float()
+        if GEN_MODEL == 'Vanilla':
+            gen_model = MAGICGenNet(CONTEXT_SIZE, PARTICLE_SIZE, CONTEXT_DEPENDENT, BELIEF_DEPENDENT).float().to(device)
+        elif GEN_MODEL == 'Autoencoder':
+            gen_model = MAGICGen_Autoencoder(CONTEXT_SIZE, PARTICLE_SIZE, CONTEXT_DEPENDENT, BELIEF_DEPENDENT).float().to(device)
+        elif GEN_MODEL == 'RNN-Autoencoder':
+            gen_model = MAGICGen_Encode_RNN(CONTEXT_SIZE, PARTICLE_SIZE, CONTEXT_DEPENDENT, BELIEF_DEPENDENT).float().to(device)
+        elif GEN_MODEL == 'RNN':
+            gen_model = MAGICGen_RNN(CONTEXT_SIZE, PARTICLE_SIZE, CONTEXT_DEPENDENT, BELIEF_DEPENDENT).float().to(device)
+        else:
+            raise Exception("Invalid generative model type")
 
     print('{} |{} |{} |{} |{} |{} |{} |{} |{} |{}'.format(
         'Batch'.rjust(10, ' '),
@@ -168,6 +185,9 @@ if __name__ == '__main__':
         stats_statistics = [Statistics() for _ in range(5)]
         planner_value_statistics = defaultdict(lambda: Statistics())
         value_statistics = defaultdict(lambda: Statistics())
+        hidden_state = torch.tensor([], device=device)
+        cell_state = torch.tensor([], device=device)
+
 
         completed_iterations = 0
         while completed_iterations < ITERATIONS or (TARGET_SE is not None and total_reward_statistics.stderr() > TARGET_SE):
@@ -182,9 +202,16 @@ if __name__ == '__main__':
                 context = instruction_data[0]
                 state = instruction_data[1]
                 with torch.no_grad():
-                    (macro_actions) = gen_model.mode(
-                            torch.tensor(instruction_data[0], dtype=torch.float, device=device).unsqueeze(0),
-                            torch.tensor(instruction_data[1], dtype=torch.float, device=device).unsqueeze(0))
+                    if GEN_MODEL not in ['RNN-Autoencoder', 'RNN']:
+                        macro_actions = gen_model.mode(
+                                torch.tensor(instruction_data[0], dtype=torch.float, device=device).unsqueeze(0),
+                                torch.tensor(instruction_data[1], dtype=torch.float, device=device).unsqueeze(0))
+                    else:
+                        macro_actions, hidden_state, cell_state = gen_model.mode(
+                                torch.tensor(instruction_data[0], dtype=torch.float, device=device).unsqueeze(0),
+                                torch.tensor(instruction_data[1], dtype=torch.float, device=device).unsqueeze(0),
+                                hidden_state, cell_state)
+
                 params = macro_actions.squeeze(0).cpu().numpy()
                 socket.send_pyobj(params)
 
@@ -208,6 +235,9 @@ if __name__ == '__main__':
                 for (s, ss) in zip(stats, stats_statistics):
                     if s is not None:
                         ss.extend(s)
+                if GEN_MODEL in ['RNN', 'RNN-Autoencoder']:
+                    hidden_state = torch.tensor([], device=device)
+                    cell_state = torch.tensor([], device=device)
                 completed_iterations += 1
 
                 print('\r\033[K{} |{} |{} |{} |{} |{} |{} |{} |{} |{}| {}'.format(

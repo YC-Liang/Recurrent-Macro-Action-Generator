@@ -34,7 +34,7 @@ public:
   static constexpr array_t<float, 4> STARTING_REGION{-30.0f, 15.0f, -30.0f, -15.0f};
 
   static constexpr array_t<vector_t, 7> LIGHT_POSITION{
-    vector_t{-33, -28},
+    vector_t{-33, -24},
     vector_t{-26, -26},
     vector_t{6, -6},
     vector_t{6, -26},
@@ -64,9 +64,9 @@ public:
 
   
   static constexpr array_t<array_t<float, 4>, 3> GOAL_REGION{
-    array_t<float, 4>{5, 30, 10, -30},
-    array_t<float, 4>{10, 30, 30, 13},
-    array_t<float, 4>{10, 8, 30, -10}
+    array_t<float, 4>{6, 28, 9, -28},
+    array_t<float, 4>{10, 28, 30, 15},
+    array_t<float, 4>{10, 6, 30, -8}
   };
   
 
@@ -116,9 +116,10 @@ public:
   /* ====== Construction functions ====== */
   Navigation2D();
   static Navigation2D CreateRandom();
+  static Navigation2D SampleInitial(); //samples the start position of the actual agent
 
   /* ====== Belief related functions ====== */
-  static Navigation2D SampleBeliefPrior();
+  static Navigation2D SampleBeliefPrior(); //samples the belief prior which is sampled from two locations since the agent doesn't know its position initially
   float Error(const Navigation2D& other) const;
 
   /* ====== Bounds related functions ====== */
