@@ -10,10 +10,10 @@
 namespace simulations {
 
 Navigation2D::Action Navigation2D::Action::Rand() {
-  //Action action{std::uniform_real_distribution<float>(0, 2 * PI)(Rng())};
+  Action action{std::uniform_real_distribution<float>(0, 2 * PI)(Rng())};
   //Action action{0};
-  //Action action{PI/2.0f};
-  Action action{PI+PI/2.2f};
+  //Action action{PI/4.0f};
+  //Action action{PI+PI/2.2f};
   return action;
 }
 
@@ -221,7 +221,7 @@ std::tuple<Navigation2D, float, Navigation2D::Observation, float> Navigation2D::
   else if(next_sim.step == MAX_STEPS){
     //std::cout << "Reached maximum allowed steps." << std::endl;
     reward = COLLISION_REWARD;
-    next_sim._is_failure = true;
+    next_sim._is_failure = false;
     next_sim._is_terminal = true;
   }
   else if(IsInDangerZone(next_sim.ego_agent_position)){
@@ -231,7 +231,7 @@ std::tuple<Navigation2D, float, Navigation2D::Observation, float> Navigation2D::
     }*/
 
     reward = COLLISION_REWARD;
-    next_sim._is_terminal = false;
+    next_sim._is_terminal = true;
     next_sim._is_failure = true;
     //std::cout << "step reward 1: " << reward << std::endl;
   }

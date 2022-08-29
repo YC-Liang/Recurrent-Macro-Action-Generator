@@ -12,7 +12,7 @@ parser.add_argument('--num-iterations', type=int, default=None)
 parser.add_argument('--not-belief-dependent', dest='belief_dependent', default=True, action='store_false')
 parser.add_argument('--not-context-dependent', dest='context_dependent', default=True, action='store_false')
 parser.add_argument('--output-dir', required=False, default=None)
-parser.add_argument('--gen-model-name', required = False, default = "Vanilla")
+#parser.add_argument('--gen-model-name', required = False, default = "Vanilla")
 parser.add_argument('--log-dir', required=False, default=None)
 args = parser.parse_args()
 
@@ -21,7 +21,7 @@ import sys
 sys.path.append('{}/../'.format(os.path.dirname(os.path.realpath(__file__))))
 from environment import Environment, Response
 from models import MAGICGenNet, MAGICCriticNet, MAGICGenNet_DriveHard, MAGICCriticNet_DriveHard
-from models import MAGICGen_Autoencoder, MAGICGen_Encode_RNN, MAGICGen_RNN, MAGICCritic_RNN, MAGICCritic_Autoencoder
+from models import MAGICGen_VLMAG, MAGICCriticNet_VLMAG
 from replay import ReplayBuffer
 from utils import PARTICLE_SIZES, CONTEXT_SIZES
 
@@ -47,21 +47,20 @@ BELIEF_DEPENDENT = args.belief_dependent
 CONTEXT_DEPENDENT = args.context_dependent
 
 # Training configurations
-REPLAY_MIN = 10
+REPLAY_MIN = 10000
 REPLAY_MAX = 100000
 REPLAY_SAMPLE_SIZE = 256
 SAVE_INTERVAL = 5000 if TASK == 'DriveHard' else 10000
 PRINT_INTERVAL = 100
 RECENT_HISTORY_LENGTH = 50
 OUTPUT_DIR = args.output_dir
-GEN_MODEL = args.gen_model_name
-GEN_MODELS = ['Vanilla', 'Autoencoder', 'RNN', 'RNN-Autoencoder']
 LOG_DIR = args.log_dir
 SAVE_PATH = 'learned_{}_{}/'.format(TASK, MACRO_LENGTH)
 LOG_SAVE_PATH = 'learned_{}_{}.csv'.format(TASK, MACRO_LENGTH)
 #MACRO_ACTION_LOG_PATH = '{}_macro_actions_dist.csv'.format(TASK)
 NUM_ITERATIONS = args.num_iterations
 NUM_CURVES = 8  #number of actions in a macro action
+MAX_ACTION_LEN = 24
 
 if GEN_MODEL not in GEN_MODELS:
     raise Exception("Invalid generative model type")
@@ -141,14 +140,10 @@ def environment_process(port):
             steps = 0
             total_reward = 0
 
-def rand_macro_action_set(num_macros, macro_order):
-    x = np.random.normal(size=(num_macros, macro_order * 2))
+def rand_macro_action_set(num_macros, max_length):
+    x = np.random.normal(size=(num_macros, max_length))
     x /= np.expand_dims(np.linalg.norm(x, axis=-1), axis=-1)
-    return x.reshape((num_macros * 2 * macro_order,)).astype(np.float32)
-
-def rand_macro_action_set_drive_straight(num_macros):
-    x = np.random.uniform(-1.0, 1.0, (num_macros * 2,))
-    return x.astype(np.float32)
+    return x.reshape((num_macros * max_length,)).astype(np.float32)
 
 if __name__ == '__main__':
 
@@ -179,28 +174,12 @@ if __name__ == '__main__':
     # Load models.
     print('Loading models...')
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-    if TASK in ['DriveHard']:
-        #TODO: Change model according to the command line input
-        gen_model = MAGICGenNet_DriveHard(MACRO_LENGTH, CONTEXT_DEPENDENT, BELIEF_DEPENDENT).float().to(device)
-        critic_model = MAGICCriticNet_DriveHard(MACRO_LENGTH, True, True).float().to(device)
-    else:
-        if GEN_MODEL == 'Vanilla':
-            gen_model = MAGICGenNet(CONTEXT_SIZE, PARTICLE_SIZE, CONTEXT_DEPENDENT, BELIEF_DEPENDENT).float().to(device)
-        elif GEN_MODEL == 'Autoencoder':
-            gen_model = MAGICGen_Autoencoder(CONTEXT_SIZE, PARTICLE_SIZE, CONTEXT_DEPENDENT, BELIEF_DEPENDENT).float().to(device)
-        elif GEN_MODEL == 'RNN-Autoencoder':
-            gen_model = MAGICGen_Encode_RNN(CONTEXT_SIZE, PARTICLE_SIZE, CONTEXT_DEPENDENT, BELIEF_DEPENDENT).float().to(device)
-        elif GEN_MODEL == 'RNN':
-            gen_model = MAGICGen_RNN(CONTEXT_SIZE, PARTICLE_SIZE, CONTEXT_DEPENDENT, BELIEF_DEPENDENT).float().to(device)
-        else:
-            raise Exception("Invalid generative model type")
-
-        critic_model = MAGICCriticNet(CONTEXT_SIZE, PARTICLE_SIZE, True, True).float().to(device)
+    gen_model = MAGICGen_VLMAG(CONTEXT_SIZE, PARTICLE_SIZE, CONTEXT_DEPENDENT, BELIEF_DEPENDENT).float.to(device)
+    critic_model = MAGICCriticNet_VLMAG(CONTEXT_SIZE, PARTICLE_SIZE, True, True).float().to(device)
     gen_model_optimizer = optim.Adam(gen_model.parameters(), lr=LR)
     critic_model_optimizer = optim.Adam(critic_model.parameters(), lr=LR)
-
-    log_alpha = torch.tensor(LOG_ALPHA_INIT, requires_grad=True, device=device)
-    alpha_optim = optim.Adam([log_alpha], lr=LR)
+    #log_alpha = torch.tensor(LOG_ALPHA_INIT, requires_grad=True, device=device)
+    #alpha_optim = optim.Adam([log_alpha], lr=LR)
 
     # Prepare zmq server.
     zmq_context = zmq.Context()
@@ -232,28 +211,18 @@ if __name__ == '__main__':
         instruction_data = request[1:]
 
         if instruction == 'CALL_GENERATOR':
-
             if len(replay_buffer) < REPLAY_MIN:
-                if TASK in ['DriveStraight', 'DriveHard']:
-                    params = rand_macro_action_set_drive_straight(7)
-                else:
-                    params = rand_macro_action_set(8, 3) #8 macro action, 3 points
+                params = rand_macro_action_set(8, 3)
             else:
                 with torch.no_grad():
-                    if GEN_MODEL not in ['RNN-Autoencoder', 'RNN']:
-                        (macro_actions, macro_actions_entropy) = gen_model.rsample(
-                                torch.tensor(instruction_data[0], dtype=torch.float, device=device).unsqueeze(0),
-                                torch.tensor(instruction_data[1], dtype=torch.float, device=device).unsqueeze(0))
-                    else:
-                        (macro_actions, macro_actions_entropy), hidden_state, cell_state = gen_model.rsample(
-                                torch.tensor(instruction_data[0], dtype=torch.float, device=device).unsqueeze(0),
-                                torch.tensor(instruction_data[1], dtype=torch.float, device=device).unsqueeze(0),
-                                hidden_state, cell_state)
+                    macro_actions = gen_model.forward(
+                        torch.tensor(instruction_data[0], dtype=torch.float, device=device).unsqueeze(0),
+                        torch.tensor(instruction_data[1], dtype=torch.float, device=device).unsqueeze(0),
+                        hidden_state, cell_state)
                     params = macro_actions.squeeze(0).cpu().numpy()
             socket.send_pyobj(params)
 
         elif instruction == 'ADD_TRAJECTORY_RESULT':
-
             socket.send_pyobj(0) # Return immediately.
             recent_steps.append((instruction_data[0], instruction_data[2] > 0.5))
             recent_total_reward.append(instruction_data[1])
@@ -272,7 +241,6 @@ if __name__ == '__main__':
             cell_state = torch.tensor([], device=device)
 
         elif instruction == 'ADD_EXPERIENCE':
-
             socket.send_pyobj(0) # Return immediately.
 
             recent_values.append(instruction_data[3])
@@ -289,13 +257,10 @@ if __name__ == '__main__':
 
             # Sample training mini-batch.
             sampled_evaluations = replay_buffer.sample(REPLAY_SAMPLE_SIZE)
-            sampled_contexts = torch.stack([t[0] for t in sampled_evaluations]) #256x3
-            sampled_states = torch.stack([t[1] for t in sampled_evaluations]) #256x300
-            sampled_params = torch.stack([t[2] for t in sampled_evaluations]) #256x48
+            sampled_contexts = torch.stack([t[0] for t in sampled_evaluations])
+            sampled_states = torch.stack([t[1] for t in sampled_evaluations])
+            sampled_params = torch.stack([t[2] for t in sampled_evaluations])
             sampled_values = torch.stack([t[3] for t in sampled_evaluations])
-
-            print("Sampled mini batch params size")
-            print(sampled_params.size())
 
             # Update critic.
             critic_loss = torch.distributions.Normal(*critic_model(sampled_contexts, sampled_states, sampled_params)) \
@@ -307,31 +272,28 @@ if __name__ == '__main__':
             critic_model_optimizer.step()
 
             # Update params model.
-            if GEN_MODEL not in ['RNN-Autoencoder', 'RNN']:
-                (macro_actions, macro_actions_entropy) = gen_model.rsample(sampled_contexts, sampled_states)
-            else:
-                #For RNN, we require the LSTM to use new memories since DRQN reports in the long run, LSTM still learns the sequential relationship
-                temp_h = torch.tensor([], device=device)
-                temp_c = torch.tensor([], device=device)
-                (macro_actions, macro_actions_entropy),_, _ = gen_model.rsample(sampled_contexts, sampled_states, temp_h, temp_c)
+            #For RNN, we require the LSTM to use new memories since DRQN reports in the long run, LSTM still learns the sequential relationship
+            temp_h = torch.tensor([], device=device)
+            temp_c = torch.tensor([], device=device)
+            macro_actions = gen_model.forward(sampled_contexts, sampled_states, temp_h, temp_c)
             (value, sd) = critic_model(sampled_contexts, sampled_states, macro_actions)
             critic_model_optimizer.zero_grad()
             gen_model_optimizer.zero_grad()
-            dual_terms = (log_alpha.exp().detach() * macro_actions_entropy).sum(dim=-1)
-            gen_objective = value + dual_terms
+            #dual_terms = (log_alpha.exp().detach() * macro_actions_entropy).sum(dim=-1)
+            gen_objective = value #+ dual_terms
             (-gen_objective.mean()).backward()
             torch.nn.utils.clip_grad_norm_(gen_model.parameters(), 1.0)
             gen_model_optimizer.step()
 
             # Update dual variables.
-            alpha_optim.zero_grad()
-            alpha_loss = log_alpha * ((macro_actions_entropy - torch.tensor(
-                    TARGET_ENTROPY, device=device, dtype=torch.float32)).detach())
-            alpha_loss.mean().backward()
-            with torch.no_grad():
-                log_alpha.grad *= (((-log_alpha.grad >= 0) | (log_alpha >= LOG_ALPHA_MIN)) &
-                        ((-log_alpha.grad < 0) | (log_alpha <= LOG_ALPHA_MAX))).float()
-            alpha_optim.step()
+            #alpha_optim.zero_grad()
+            #alpha_loss = log_alpha * ((macro_actions_entropy - torch.tensor(
+                    #TARGET_ENTROPY, device=device, dtype=torch.float32)).detach())
+            #alpha_loss.mean().backward()
+            #with torch.no_grad():
+                #log_alpha.grad *= (((-log_alpha.grad >= 0) | (log_alpha >= LOG_ALPHA_MIN)) &
+                        #((-log_alpha.grad < 0) | (log_alpha <= LOG_ALPHA_MAX))).float()
+            #alpha_optim.step()
 
             # Log statistics.
             if step % PRINT_INTERVAL == 0:
@@ -346,12 +308,12 @@ if __name__ == '__main__':
                 print('Step {}: Critic Net Loss = {}'.format(step, critic_loss.detach().item()))
                 print('Step {}: Generator Mean = {}'.format(step, value.mean().detach().item()))
                 print('Step {}: Generator S.D. = {}'.format(step, sd.mean().detach().item()))
-                print('Step {}: Generator Curve Entropy = {}'.format(step, macro_actions_entropy.mean(dim=-2).detach().cpu().numpy()))
+                #print('Step {}: Generator Curve Entropy = {}'.format(step, macro_actions_entropy.mean(dim=-2).detach().cpu().numpy()))
                 for i in range(5):
                     chained = list(itertools.chain.from_iterable(recent_stats[i]))
                     print('Step {}: Recent Stat{} = {}'.format(step, i, np.mean(chained) if len(chained) > 0 else None))
                 print('Step {}: Elapsed = {} m'.format(step, (time.time() - start) / 60))
-                print('Alpha = ', torch.exp(log_alpha))
+                #print('Alpha = ', torch.exp(log_alpha))
 
             # save logs as csv file
             if LOG_DIR != None:

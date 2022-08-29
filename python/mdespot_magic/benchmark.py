@@ -69,7 +69,7 @@ def environment_process(port):
         cycles = 0
         steps = 0
         total_reward = 0
-        collision = 0
+        collision = None
         macro_length = 0
         num_nodes = None
         depth = None
@@ -102,9 +102,9 @@ def environment_process(port):
             if response.depth is not None:
                 depth = response.depth if depth is None else max(depth, response.depth)
             steps += response.steps
-            if response.is_failure:
-                collision += 1
+
             if response.is_terminal:
+                collision = response.is_failure
                 stats = response.stats
                 break
 
