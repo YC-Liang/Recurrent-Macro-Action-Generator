@@ -9,6 +9,7 @@
 #include <iostream>
 #include <macaron/Base64.h>
 #include <opencv2/highgui.hpp>
+#include <cstdio>
 namespace po = boost::program_options;
 
 typedef Belief<ExpSimulation> ExpBelief;
@@ -50,6 +51,13 @@ int main(int argc, char** argv) {
       // Get macro actions.
       list_t<list_t<ExpSimulation::Action>> macro_actions = ExpSimulation::Action::Deserialize(
           FromBytes<float>(macaron::Base64::Decode(get_cin_line())), macro_length);
+      /*
+      for(auto row : macro_actions){
+        for(auto action : row){
+          std::clog << action.orientation << ',';
+        }
+        std::clog << std::endl;
+      }*/
 
       // Execute planner.
       ExpPlanner::SearchResult search_result = planner.Search(belief.ResampleNonTerminal(), macro_actions);
@@ -57,6 +65,7 @@ int main(int argc, char** argv) {
       // Execute macro-action.
       ExpPlanner::ExecutionResult execution_result = ExpPlanner::ExecuteMacroAction(
           sim, search_result.action, ExpSimulation::MAX_STEPS - steps);
+
 #ifdef SIM_PuckPush
       vector_t macro_action_start = sim.bot_position;
 #else

@@ -47,7 +47,7 @@ BELIEF_DEPENDENT = args.belief_dependent
 CONTEXT_DEPENDENT = args.context_dependent
 
 # Training configurations
-REPLAY_MIN = 10
+REPLAY_MIN = 10000
 REPLAY_MAX = 100000
 REPLAY_SAMPLE_SIZE = 256
 SAVE_INTERVAL = 5000 if TASK == 'DriveHard' else 10000
@@ -293,9 +293,6 @@ if __name__ == '__main__':
             sampled_states = torch.stack([t[1] for t in sampled_evaluations]) #256x300
             sampled_params = torch.stack([t[2] for t in sampled_evaluations]) #256x48
             sampled_values = torch.stack([t[3] for t in sampled_evaluations])
-
-            print("Sampled mini batch params size")
-            print(sampled_params.size())
 
             # Update critic.
             critic_loss = torch.distributions.Normal(*critic_model(sampled_contexts, sampled_states, sampled_params)) \

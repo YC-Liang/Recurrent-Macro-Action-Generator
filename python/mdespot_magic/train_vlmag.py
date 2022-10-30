@@ -4,8 +4,6 @@ import argparse
 parser = argparse.ArgumentParser(description='Macro-DESPOT (MAGIC) Training Args')
 parser.add_argument('--task', required=True,
                     help='Task')
-parser.add_argument('--macro-length', type=int, required=True,
-                    help='Macro-action length')
 parser.add_argument('--num-env', type=int, default=16,
                     help='Number of environments (default: 16)')
 parser.add_argument('--num-iterations', type=int, default=None)
@@ -40,11 +38,13 @@ np.set_printoptions(precision=4, suppress=True)
 torch.set_num_threads(1)
 
 TASK = args.task
-MACRO_LENGTH = args.macro_length
 PARTICLE_SIZE = PARTICLE_SIZES[TASK] if TASK in PARTICLE_SIZES else None
-CONTEXT_SIZE = CONTEXT_SIZES[TASK] if TASK in CONTEXT_SIZES else None
+CONTEXT_SIZE = CONTEXT_SIZES[TASK]+1 if TASK in CONTEXT_SIZES else None
 BELIEF_DEPENDENT = args.belief_dependent
 CONTEXT_DEPENDENT = args.context_dependent
+
+print(f"The model depends on context: {CONTEXT_DEPENDENT}")
+print(f"The model depends on belief: {BELIEF_DEPENDENT}")
 
 # Training configurations
 REPLAY_MIN = 10000
@@ -55,15 +55,13 @@ PRINT_INTERVAL = 100
 RECENT_HISTORY_LENGTH = 50
 OUTPUT_DIR = args.output_dir
 LOG_DIR = args.log_dir
-SAVE_PATH = 'learned_{}_{}/'.format(TASK, MACRO_LENGTH)
-LOG_SAVE_PATH = 'learned_{}_{}.csv'.format(TASK, MACRO_LENGTH)
+SAVE_PATH = 'learned_{}/'.format(TASK)
+LOG_SAVE_PATH = 'learned_{}.csv'.format(TASK)
 #MACRO_ACTION_LOG_PATH = '{}_macro_actions_dist.csv'.format(TASK)
 NUM_ITERATIONS = args.num_iterations
 NUM_CURVES = 8  #number of actions in a macro action
-MAX_ACTION_LEN = 24
-
-if GEN_MODEL not in GEN_MODELS:
-    raise Exception("Invalid generative model type")
+MAX_ACTION_LEN = 16
+VOCABULARY_SIZE = 73
 
 if TASK in ['DriveHard']:
     TARGET_ENTROPY = np.array([-1.0] * 14, dtype=np.float32)
@@ -83,6 +81,7 @@ elif TASK in ['Navigation2D']:
     LR = 1e-4
 LOG_ALPHA_MIN = -10.
 LOG_ALPHA_MAX = 20.
+#LAMBDA = 5
 
 NUM_ENVIRONMENTS = args.num_env
 ZMQ_ADDRESS = 'tcp://127.0.0.1'
@@ -92,15 +91,17 @@ def environment_process(port):
     socket = zmq_context.socket(zmq.REQ)
     socket.connect('{}:{}'.format(ZMQ_ADDRESS, port))
 
-    environment = Environment(TASK, MACRO_LENGTH, False)
+    environment = Environment(TASK, MAX_ACTION_LEN, False)
 
     steps = 0
     total_reward = 0
+    previous_best_reward = -50
 
     while True:
 
         # Read from environment.
         context = environment.read_context()
+        context = np.append(context, previous_best_reward)
         #context = cv2.imdecode(context, cv2.IMREAD_UNCHANGED)[...,0:2]
         state = environment.read_state()
 
@@ -110,11 +111,12 @@ def environment_process(port):
                 'CALL_GENERATOR',
                 context,
                 state))
-            params = socket.recv_pyobj()
-            environment.write_params(params)
+            macro_action_indices = socket.recv_pyobj()
+            environment.write_params(macro_action_indices)
 
         # Read response.
         response = environment.process_response()
+        previous_best_reward = response.best_value
 
         # Add experience.
         if state is not None and response.best_value is not None:
@@ -122,7 +124,7 @@ def environment_process(port):
                 'ADD_EXPERIENCE',
                 context,
                 state,
-                params,
+                macro_action_indices,
                 response.best_value))
             socket.recv_pyobj()
 
@@ -141,9 +143,35 @@ def environment_process(port):
             total_reward = 0
 
 def rand_macro_action_set(num_macros, max_length):
-    x = np.random.normal(size=(num_macros, max_length))
-    x /= np.expand_dims(np.linalg.norm(x, axis=-1), axis=-1)
-    return x.reshape((num_macros * max_length,)).astype(np.float32)
+    weights = torch.rand(VOCABULARY_SIZE, max_length) #VOC_SIZE x MAX_ACTION_LEN
+    indices = weights.topk(NUM_CURVES, 0)[1] #NUM_CURVES x MAX_ACTION_LEN
+    weights = np.asarray(weights, dtype=np.float32).flatten()
+    indices = np.asarray(indices, dtype=np.float32).flatten()
+    return weights, indices
+
+
+def distance_penalty(macro_action):
+    '''
+    Calculate the straighline distance covered by the macro action
+    and calculate the corresponding penalty term
+    '''
+    zero_index = np.where(macro_action == 0)[0]
+    if zero_index.shape[0] != 0:    
+        macro_action = macro_action[:zero_index[0]]
+    n = macro_action.shape[0]
+
+    pos = np.array([0,0])
+    for action in macro_action:
+        theta= (5*action-5) * (np.pi / 180)
+        pos = pos + np.array([np.cos(theta), np.sin(theta)])
+
+    return 1 - np.linalg.norm(pos) / n
+
+
+def lambda_scheduler(n):
+    #return 5 * np.exp(-(n/30000))
+    return 3.5
+
 
 if __name__ == '__main__':
 
@@ -174,7 +202,8 @@ if __name__ == '__main__':
     # Load models.
     print('Loading models...')
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-    gen_model = MAGICGen_VLMAG(CONTEXT_SIZE, PARTICLE_SIZE, CONTEXT_DEPENDENT, BELIEF_DEPENDENT).float.to(device)
+    print(f'Using device {device}')
+    gen_model = MAGICGen_VLMAG(CONTEXT_SIZE, PARTICLE_SIZE, CONTEXT_DEPENDENT, BELIEF_DEPENDENT).float().to(device)
     critic_model = MAGICCriticNet_VLMAG(CONTEXT_SIZE, PARTICLE_SIZE, True, True).float().to(device)
     gen_model_optimizer = optim.Adam(gen_model.parameters(), lr=LR)
     critic_model_optimizer = optim.Adam(critic_model.parameters(), lr=LR)
@@ -200,8 +229,6 @@ if __name__ == '__main__':
     recent_values = []
     recent_stats = [[] for _ in range(5)]
     replay_buffer = ReplayBuffer(REPLAY_MAX)
-    hidden_state = torch.tensor([], device=device)
-    cell_state = torch.tensor([], device=device)
 
     while True:
 
@@ -212,15 +239,15 @@ if __name__ == '__main__':
 
         if instruction == 'CALL_GENERATOR':
             if len(replay_buffer) < REPLAY_MIN:
-                params = rand_macro_action_set(8, 3)
+                _, macro_action_indices = rand_macro_action_set(NUM_CURVES, MAX_ACTION_LEN)
             else:
                 with torch.no_grad():
-                    macro_actions = gen_model.forward(
+                    _, macro_action_indices = gen_model.forward(
                         torch.tensor(instruction_data[0], dtype=torch.float, device=device).unsqueeze(0),
-                        torch.tensor(instruction_data[1], dtype=torch.float, device=device).unsqueeze(0),
-                        hidden_state, cell_state)
-                    params = macro_actions.squeeze(0).cpu().numpy()
-            socket.send_pyobj(params)
+                        torch.tensor(instruction_data[1], dtype=torch.float, device=device).unsqueeze(0))
+                    macro_action_indices = macro_action_indices.squeeze(0).cpu().numpy()
+                    #macro_action_weights = macro_action_weights.squeeze(0).cpu().numpy()
+            socket.send_pyobj(macro_action_indices)
 
         elif instruction == 'ADD_TRAJECTORY_RESULT':
             socket.send_pyobj(0) # Return immediately.
@@ -235,10 +262,6 @@ if __name__ == '__main__':
                 if instruction_data[3][i] is not None:
                     recent_stats[i].append(instruction_data[3][i])
                     recent_stats[i] = recent_stats[i][-RECENT_HISTORY_LENGTH:]
-
-            #clear LSTM memory for a new episode
-            hidden_state = torch.tensor([], device=device)
-            cell_state = torch.tensor([], device=device)
 
         elif instruction == 'ADD_EXPERIENCE':
             socket.send_pyobj(0) # Return immediately.
@@ -273,14 +296,28 @@ if __name__ == '__main__':
 
             # Update params model.
             #For RNN, we require the LSTM to use new memories since DRQN reports in the long run, LSTM still learns the sequential relationship
-            temp_h = torch.tensor([], device=device)
-            temp_c = torch.tensor([], device=device)
-            macro_actions = gen_model.forward(sampled_contexts, sampled_states, temp_h, temp_c)
-            (value, sd) = critic_model(sampled_contexts, sampled_states, macro_actions)
+            _, macro_action_indices = gen_model.forward(sampled_contexts, sampled_states)
+            (value, sd) = critic_model(sampled_contexts, sampled_states, macro_action_indices)
             critic_model_optimizer.zero_grad()
             gen_model_optimizer.zero_grad()
             #dual_terms = (log_alpha.exp().detach() * macro_actions_entropy).sum(dim=-1)
-            gen_objective = value #+ dual_terms
+            #calculate distance penalties for each action
+            #for macro_action in macro_action_indices.squeeze(0).cpu().numpy():
+            macro_action_indices = macro_action_indices.squeeze(0).cpu().numpy()
+            macro_action_indices = macro_action_indices.reshape(REPLAY_SAMPLE_SIZE, NUM_CURVES, -1)
+            #calculate the distance penalty term
+            phi = np.zeros(REPLAY_SAMPLE_SIZE) #distance penalty terms
+
+            for batch in range(REPLAY_SAMPLE_SIZE):
+                macro_actions = macro_action_indices[batch]
+                for macro_action in macro_actions:
+                    phi[batch] = phi[batch] + distance_penalty(macro_action)
+
+            phi *= lambda_scheduler(step)
+            #print(phi)
+            #phi_copy = phi.copy()
+            phi = torch.from_numpy(phi).float().to(value.get_device())
+            gen_objective = value - phi #+ dual_terms
             (-gen_objective.mean()).backward()
             torch.nn.utils.clip_grad_norm_(gen_model.parameters(), 1.0)
             gen_model_optimizer.step()
@@ -308,6 +345,7 @@ if __name__ == '__main__':
                 print('Step {}: Critic Net Loss = {}'.format(step, critic_loss.detach().item()))
                 print('Step {}: Generator Mean = {}'.format(step, value.mean().detach().item()))
                 print('Step {}: Generator S.D. = {}'.format(step, sd.mean().detach().item()))
+                print('Step {}: Distance penalty = {}'.format(step, -phi.mean().detach().item()))
                 #print('Step {}: Generator Curve Entropy = {}'.format(step, macro_actions_entropy.mean(dim=-2).detach().cpu().numpy()))
                 for i in range(5):
                     chained = list(itertools.chain.from_iterable(recent_stats[i]))
@@ -330,6 +368,8 @@ if __name__ == '__main__':
                         log_file.write(str(torch.cuda.memory_allocated(0)))
                         log_file.write(',')
                     log_file.write(str(critic_loss.detach().item()))
+                    log_file.write(',')
+                    log_file.write(str(-phi.mean().detach().item()))
                     log_file.write('\n')
 
             # Save models.

@@ -11,7 +11,7 @@ namespace simulations {
 
 Navigation2D::Action Navigation2D::Action::Rand() {
   Action action{std::uniform_real_distribution<float>(0, 2 * PI)(Rng())};
-  //Action action{0};
+  //Action action{0f};
   //Action action{PI/4.0f};
   //Action action{PI+PI/2.2f};
   return action;
@@ -38,8 +38,42 @@ list_t<list_t<Navigation2D::Action>> Navigation2D::Action::CreateHandcrafted(siz
 }
 
 list_t<list_t<Navigation2D::Action>> Navigation2D::Action::Deserialize(const list_t<float>& params, size_t macro_length) {
-  //TODO: check that StandardMacroActionDeserialization converts 2D Bezier Curve to orientations of vector of the same magnitude
-  list_t<list_t<Navigation2D::Action>> macro_actions = StandardMacroActionDeserialization<Navigation2D::Action>(params, macro_length);
+  //receives a list of list of action indices. idx 0 means end of action. else, orientation is idx-1 degrees
+  if(params.size() % macro_length != 0){throw std::logic_error("Wrong number of parsed macro actions.");}
+  list_t<list_t<Navigation2D::Action>> macro_actions;
+  Action trigger_action;
+  trigger_action.trigger = true;
+  macro_actions.emplace_back();
+  macro_actions.back().push_back(trigger_action);
+  size_t count = 0;
+  bool skip = false; //skip the rest of the actions since EOA is generated
+
+  for(float idx : params){
+    if(count == macro_length){
+      count = 0;
+      skip = false;
+      macro_actions.emplace_back();
+      macro_actions.back().push_back(trigger_action);
+    }
+    if(abs(idx) < 0.1f){
+      skip = true;
+    }
+    if(skip){
+      count++;
+      continue;
+    }
+    float orientation = (idx*5 - 5.0f) * (PI / 180.0f);
+    macro_actions.back().push_back(orientation);
+    count++;
+  }
+  /*
+  for(auto row : macro_actions){
+    for(auto action : row){
+      std::cout << action.orientation << ',';
+    }
+    std::cout << std::endl;
+  }*/
+
   return macro_actions;
 }
 
@@ -192,9 +226,10 @@ template <bool compute_log_prob>
 std::tuple<Navigation2D, float, Navigation2D::Observation, float> Navigation2D::Step(
     const Navigation2D::Action& action, const Navigation2D::Observation* observation) const {
   if (_is_terminal) { throw std::logic_error("Cannot step terminal simulation."); }
-
   Navigation2D next_sim = *this;
-  float reward;
+  float reward = 0;
+
+  if (action.trigger) { return std::make_tuple(next_sim, STEP_REWARD, Observation(), 0.f);}
 
   /* ====== Step 1: Update state.  ======*/
   //agent motion contains noises and agent will stop at the current location if bumping into a wall
@@ -406,6 +441,7 @@ cv::Mat Navigation2D::Render(const list_t<Navigation2D>& belief_sims,
   for (size_t i = 0; i < macro_actions.size(); i++) {
     vector_t s = macro_action_start;
     for (const Action& a : macro_actions[i]) {
+      if(a.trigger){continue;} //no need to draw the trigger action as it's ignored by the step function
       vector_t e = s + vector_t(DELTA * EGO_SPEED, 0).rotated(a.orientation);
       
       cv::line(frame, to_frame(s), to_frame(e),

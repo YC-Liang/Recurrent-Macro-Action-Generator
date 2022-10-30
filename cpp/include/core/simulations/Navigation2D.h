@@ -74,14 +74,14 @@ public:
   static constexpr size_t BELIEF_NUM_PARTICLES = 10000;
 
   // Planning related parameters.
-  static constexpr size_t MAX_STEPS = 250;
+  static constexpr size_t MAX_STEPS = 150;
   static constexpr float STEP_REWARD = -0.2f;
   static constexpr float COLLISION_REWARD = -100;
   static constexpr float GOAL_REWARD = 100;
   static constexpr float GAMMA = 0.99f;
   static constexpr float WORST_REWARD = COLLISION_REWARD;
-  static constexpr size_t SEARCH_DEPTH = 250;
-  static constexpr size_t PLANNING_TIME = 400;
+  static constexpr size_t SEARCH_DEPTH = 150;
+  static constexpr size_t PLANNING_TIME = 300;
 
   // POMCPOW related parameters.
   static constexpr float POMCPOW_UCB = 50;
@@ -101,6 +101,7 @@ public:
   //change actions
   struct Action {
     float orientation;
+    bool trigger = false;
     static Action Rand();
     Action() {}
     Action(float orientation) : orientation(orientation) { }

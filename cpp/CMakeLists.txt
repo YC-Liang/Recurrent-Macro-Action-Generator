@@ -106,8 +106,6 @@ target_link_libraries("DespotMagicEnvDriveHard" macro_nav)
 message("Adding environment tests:")
 foreach(TASK
     LightDark
-    PuckPush
-    VdpTag
     Navigation2D
     )
   message("  TaskTest${TASK}")
