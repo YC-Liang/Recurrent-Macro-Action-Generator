@@ -104,6 +104,7 @@ def environment_process(port):
         context = environment.read_context()
         #context = cv2.imdecode(context, cv2.IMREAD_UNCHANGED)[...,0:2]
         state = environment.read_state()
+        visual = environment.construct_visual()
 
         # Call generator if needed.
         if state is not None:

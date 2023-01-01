@@ -1,6 +1,7 @@
 from base64 import b64encode, b64decode
 from collections import namedtuple
 from subprocess import Popen, PIPE
+import cv2 as cv
 import numpy as np
 import struct
 import time
@@ -31,15 +32,103 @@ class Environment:
             l.append('--visualize')
         self.process = Popen(l, shell=False, stdout=PIPE, stdin=PIPE, stderr=PIPE)
 
+        self.context_arr = np.asarray([])
+        self.state_arr = np.asarray([])
+
     def read_context(self):
         data = np.array([x[0] for x in struct.iter_unpack('f', b64decode(self.process.stdout.readline().decode('utf8').strip()))])
-        return data.astype(np.float32)
+        data.astype(np.float32)
+        self.context_arr = data
+        return data
 
     def read_state(self):
         raw = self.process.stdout.readline().decode('utf8').strip()
         if raw == '':
+            self.state_arr = np.asarray([])
             return None
-        return np.array([x[0] for x in struct.iter_unpack('f', b64decode(raw))]).astype(np.float32)
+        else:
+            data = np.array([x[0] for x in struct.iter_unpack('f', b64decode(raw))]).astype(np.float32)
+            self.state_arr = data
+        return data
+
+    def construct_visual(self):
+        SCENARIO_MIN = -35.0
+        SCENARIO_MAX = 30.0
+        RESOLUTION = 0.1
+
+        #helper function that converts world frame to opencv frame
+
+        to_frame = lambda vec : (
+            int((vec[0]-SCENARIO_MIN)/RESOLUTION),
+            int((SCENARIO_MAX-vec[1])/RESOLUTION)
+        )
+        
+        to_frame_dist = lambda d : int(d/RESOLUTION)
+
+        x_to_frame = lambda x : int((x-SCENARIO_MIN)/RESOLUTION)
+        y_to_frame = lambda y : int((SCENARIO_MAX-y)/RESOLUTION)
+
+        #build white background
+        img = np.zeros((
+            int(abs(SCENARIO_MAX * 2)/RESOLUTION),
+            int(abs(SCENARIO_MIN * 2)/RESOLUTION),
+            3
+        ), np.uint8) + 255
+
+        #draw goal 
+        cv.circle(img, 
+        to_frame(self.context_arr[0:2]), 
+        to_frame_dist(1.5),
+        (81, 218, 11),
+        -1)
+
+        #draw lights
+        lights = self.context_arr[2:16].reshape(7,2)
+        for l in lights:
+            cv.circle(img, 
+            to_frame(l), 
+            to_frame_dist(2.0),
+            (26, 118, 245),
+            -1)
+        
+        #draw wall
+        walls = self.context_arr[16: 36].reshape(5,4)
+        blue = np.asarray([255,0,0], np.uint8)
+        for w in walls:
+            cv.rectangle(img, 
+            to_frame(w[0:2]),
+            to_frame(w[2:]),
+            tuple(blue.tolist()),
+            -1)
+        
+        #draw danger zone
+        dgr_zone = self.context_arr[36: 52].reshape(4,4)
+        for d in dgr_zone:
+            cv.rectangle(img,
+            to_frame(d[0:2]),
+            to_frame(d[2:]),
+            (69, 69, 186),
+            -1)
+        #draw belief particles, 100 of them, the first one in an particle is the step number
+        belief_particles = self.state_arr.reshape(100,3)
+        for b in belief_particles:
+            cv.drawMarker(img,
+            to_frame(b[1:]),
+            (0,255,255),
+            8,
+            2,
+            4)
+        print(belief_particles[87])
+        cv.imshow('visual', img)
+        #raise Exception("Not Implemented yet")
+        cv.waitKey()
+
+
+        
+
+
+
+        
 
     def write_params(self, params):
         params_raw = b64encode(b''.join(struct.pack('f', p) for p in params))
