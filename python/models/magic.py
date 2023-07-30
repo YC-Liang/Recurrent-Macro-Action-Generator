@@ -51,8 +51,6 @@ class MAGICGenNet(nn.Module):
         print("finished loading the model...")
 
     def forward(self, c, x):
-        print(c.shape)
-        print(x.shape)
         x = x.reshape((x.shape[0], -1, self.particle_size))
 
         if self.context_dependent or self.belief_dependent:
