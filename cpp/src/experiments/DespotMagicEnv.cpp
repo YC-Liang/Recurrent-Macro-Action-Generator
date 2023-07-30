@@ -66,7 +66,7 @@ int main(int argc, char** argv) {
       ExpPlanner::ExecutionResult execution_result = ExpPlanner::ExecuteMacroAction(
           sim, search_result.action, ExpSimulation::MAX_STEPS - steps);
 
-#ifdef SIM_PuckPush
+#if defined(SIM_PuckPush) || defined(SIM_PuckPushHard)
       vector_t macro_action_start = sim.bot_position;
 #else
       vector_t macro_action_start = sim.ego_agent_position;
@@ -80,7 +80,7 @@ int main(int argc, char** argv) {
           }
           cv::Mat frame = sim.Render(samples, macro_actions, macro_action_start);
           cv::imshow("Frame", frame);
-          cv::waitKey(1000 * ExpSimulation::DELTA);
+          cv::waitKey(1000 * ExpSimulation::DELTA);  
         }
 
         belief.Update(search_result.action[i], execution_result.observation_trajectory[i]);
@@ -89,7 +89,6 @@ int main(int argc, char** argv) {
         sim = execution_result.state_trajectory[i];
         steps++;
       }
-
       std::cout << search_result.value << std::endl; // Seach max value.
       std::cout << execution_result.state_trajectory.size() << std::endl; // Execution num steps.
       std::cout << execution_result.reward << std::endl; // Execution discounted reward.

@@ -1,0 +1,498 @@
+[2023-02-16 16:09:16.309,Pyro4,INFO] Pyro log configured using built-in defaults, level=DEBUG
+[2023-02-16 16:09:16.321,Pyro4.core,DEBUG] exposing all members of <class 'Pyro4.core.DaemonObject'>
+[2023-02-16 16:09:16.955,Pyro4.core,DEBUG] exposing all members of <class '__main__.CrowdService'>
+[2023-02-16 16:13:22.811,Pyro4,INFO] Pyro log configured using built-in defaults, level=DEBUG
+[2023-02-16 16:13:22.823,Pyro4.core,DEBUG] exposing all members of <class 'Pyro4.core.DaemonObject'>
+[2023-02-16 16:13:23.466,Pyro4.core,DEBUG] exposing all members of <class '__main__.CrowdService'>
+[2023-02-16 16:20:20.659,Pyro4,INFO] Pyro log configured using built-in defaults, level=DEBUG
+[2023-02-16 16:20:20.671,Pyro4.core,DEBUG] exposing all members of <class 'Pyro4.core.DaemonObject'>
+[2023-02-16 16:20:21.304,Pyro4.core,DEBUG] exposing all members of <class '__main__.CrowdService'>
+[2023-02-16 17:33:11.877,Pyro4,INFO] Pyro log configured using built-in defaults, level=DEBUG
+[2023-02-16 17:33:11.889,Pyro4.core,DEBUG] exposing all members of <class 'Pyro4.core.DaemonObject'>
+[2023-02-16 17:33:12.533,Pyro4.core,DEBUG] exposing all members of <class '__main__.CrowdService'>
+[2023-02-20 17:29:20.361,Pyro4,INFO] Pyro log configured using built-in defaults, level=DEBUG
+[2023-02-20 17:29:20.373,Pyro4.core,DEBUG] exposing all members of <class 'Pyro4.core.DaemonObject'>
+[2023-02-20 17:29:21.105,Pyro4.core,DEBUG] exposing all members of <class '__main__.CrowdService'>
+[2023-02-20 17:31:06.186,Pyro4,INFO] Pyro log configured using built-in defaults, level=DEBUG
+[2023-02-20 17:31:06.201,Pyro4.core,DEBUG] exposing all members of <class 'Pyro4.core.DaemonObject'>
+[2023-02-20 17:31:06.850,Pyro4.core,DEBUG] exposing all members of <class '__main__.CrowdService'>
+[2023-02-21 14:16:48.770,Pyro4,INFO] Pyro log configured using built-in defaults, level=DEBUG
+[2023-02-21 14:16:48.782,Pyro4.core,DEBUG] exposing all members of <class 'Pyro4.core.DaemonObject'>
+[2023-02-21 14:16:49.418,Pyro4.core,DEBUG] exposing all members of <class '__main__.CrowdService'>
+[2023-02-21 14:21:36.147,Pyro4,INFO] Pyro log configured using built-in defaults, level=DEBUG
+[2023-02-21 14:21:36.159,Pyro4.core,DEBUG] exposing all members of <class 'Pyro4.core.DaemonObject'>
+[2023-02-21 14:21:36.791,Pyro4.core,DEBUG] exposing all members of <class '__main__.CrowdService'>
+[2023-02-21 14:23:53.405,Pyro4,INFO] Pyro log configured using built-in defaults, level=DEBUG
+[2023-02-21 14:23:53.417,Pyro4.core,DEBUG] exposing all members of <class 'Pyro4.core.DaemonObject'>
+[2023-02-21 14:23:54.050,Pyro4.core,DEBUG] exposing all members of <class '__main__.CrowdService'>
+[2023-02-21 14:28:36.311,Pyro4,INFO] Pyro log configured using built-in defaults, level=DEBUG
+[2023-02-21 14:28:36.323,Pyro4.core,DEBUG] exposing all members of <class 'Pyro4.core.DaemonObject'>
+[2023-02-21 14:28:36.961,Pyro4.core,DEBUG] exposing all members of <class '__main__.CrowdService'>
+[2023-02-21 14:29:22.967,Pyro4,INFO] Pyro log configured using built-in defaults, level=DEBUG
+[2023-02-21 14:29:22.978,Pyro4.core,DEBUG] exposing all members of <class 'Pyro4.core.DaemonObject'>
+[2023-02-21 14:29:23.610,Pyro4.core,DEBUG] exposing all members of <class '__main__.CrowdService'>
+[2023-02-21 14:35:11.845,Pyro4,INFO] Pyro log configured using built-in defaults, level=DEBUG
+[2023-02-21 14:35:11.856,Pyro4.core,DEBUG] exposing all members of <class 'Pyro4.core.DaemonObject'>
+[2023-02-21 14:35:12.487,Pyro4.core,DEBUG] exposing all members of <class '__main__.CrowdService'>
+[2023-02-21 14:46:01.253,Pyro4,INFO] Pyro log configured using built-in defaults, level=DEBUG
+[2023-02-21 14:46:01.265,Pyro4.core,DEBUG] exposing all members of <class 'Pyro4.core.DaemonObject'>
+[2023-02-21 14:46:01.897,Pyro4.core,DEBUG] exposing all members of <class '__main__.CrowdService'>
+[2023-02-21 15:08:01.488,Pyro4,INFO] Pyro log configured using built-in defaults, level=DEBUG
+[2023-02-21 15:08:01.499,Pyro4.core,DEBUG] exposing all members of <class 'Pyro4.core.DaemonObject'>
+[2023-02-21 15:08:02.132,Pyro4.core,DEBUG] exposing all members of <class '__main__.CrowdService'>
+[2023-02-21 15:08:02.140,Pyro4.threadpoolserver,INFO] starting thread pool socketserver
+[2023-02-21 15:08:02.140,Pyro4.threadpoolserver,INFO] not using SSL
+[2023-02-21 15:08:02.141,Pyro4.threadpool,DEBUG] worker pool created with initial size 4
+[2023-02-21 15:08:02.141,Pyro4.core,DEBUG] daemon created on localhost:8100 - IPv4 (pid 21344)
+[2023-02-21 15:08:02.141,Pyro4.core,DEBUG] accepted serializers: {'serpent', 'marshal', 'json'}
+[2023-02-21 15:08:02.141,Pyro4.core,DEBUG] pyro protocol version: 48  pickle version: 5
+[2023-02-21 15:08:02.142,Pyro4.core,INFO] daemon localhost:8100 entering requestloop
+[2023-02-21 15:08:02.142,Pyro4.threadpoolserver,DEBUG] threadpool server requestloop
+[2023-02-21 15:09:39.871,Pyro4,INFO] Pyro log configured using built-in defaults, level=DEBUG
+[2023-02-21 15:09:39.883,Pyro4.core,DEBUG] exposing all members of <class 'Pyro4.core.DaemonObject'>
+[2023-02-21 15:09:40.516,Pyro4.core,DEBUG] exposing all members of <class '__main__.CrowdService'>
+[2023-02-21 15:21:18.294,Pyro4,INFO] Pyro log configured using built-in defaults, level=DEBUG
+[2023-02-21 15:21:18.307,Pyro4.core,DEBUG] exposing all members of <class 'Pyro4.core.DaemonObject'>
+[2023-02-21 15:21:18.939,Pyro4.core,DEBUG] exposing all members of <class '__main__.CrowdService'>
+[2023-02-21 15:21:18.952,Pyro4.threadpoolserver,INFO] starting thread pool socketserver
+[2023-02-21 15:21:18.952,Pyro4.threadpoolserver,INFO] not using SSL
+[2023-02-21 15:21:18.954,Pyro4.threadpool,DEBUG] worker pool created with initial size 4
+[2023-02-21 15:21:18.954,Pyro4.core,DEBUG] daemon created on localhost:23010 - IPv4 (pid 22703)
+[2023-02-21 15:21:18.954,Pyro4.core,DEBUG] accepted serializers: {'json', 'marshal', 'serpent'}
+[2023-02-21 15:21:18.954,Pyro4.core,DEBUG] pyro protocol version: 48  pickle version: 5
+[2023-02-21 15:21:18.954,Pyro4.core,INFO] daemon localhost:23010 entering requestloop
+[2023-02-21 15:21:18.954,Pyro4.threadpoolserver,DEBUG] threadpool server requestloop
+[2023-02-21 15:21:21.962,Pyro4.core,DEBUG] getting metadata for object crowdservice.warehouse
+[2023-02-21 15:21:21.962,Pyro4.core,DEBUG] connecting to PYRO:crowdservice.warehouse@localhost:23010
+[2023-02-21 15:21:21.963,Pyro4.threadpoolserver,DEBUG] connected ('127.0.0.1', 36916) - unencrypted
+[2023-02-21 15:21:21.964,Pyro4.threadpool,DEBUG] worker counts: 1 busy, 3 idle
+[2023-02-21 15:21:21.963,Pyro4.core,DEBUG] getting metadata for object crowdservice.warehouse
+[2023-02-21 15:21:21.964,Pyro4.core,DEBUG] connecting to PYRO:crowdservice.warehouse@localhost:23010
+[2023-02-21 15:21:21.964,Pyro4.core,DEBUG] getting metadata for object crowdservice.warehouse
+[2023-02-21 15:21:21.964,Pyro4.core,DEBUG] connecting to PYRO:crowdservice.warehouse@localhost:23010
+[2023-02-21 15:21:21.964,Pyro4.core,DEBUG] from meta: methods=['acquire_control_velocities', 'acquire_destroy_list', 'acquire_local_intentions', 'acquire_new_bikes', 'acquire_new_cars', 'acquire_new_pedestrians', 'append_destroy_list', 'append_new_bikes', 'append_new_cars', 'append_new_pedestrians', 'extend_destroy_list', 'release_control_velocities', 'release_destroy_list', 'release_local_intentions', 'release_new_bikes', 'release_new_cars', 'release_new_pedestrians'], oneway methods=[], attributes=['control_velocities', 'destroy_list', 'forbidden_bounds', 'local_intentions', 'new_bikes', 'new_cars', 'new_pedestrians', 'simulation_bounds', 'spawn_bike', 'spawn_car', 'spawn_pedestrian']
+[2023-02-21 15:21:21.964,Pyro4.core,DEBUG] connected to PYRO:crowdservice.warehouse@localhost:23010 - IPv4 - unencrypted
+[2023-02-21 15:21:21.964,Pyro4.core,DEBUG] reusing existing metadata
+[2023-02-21 15:21:21.964,Pyro4.core,DEBUG] instancemode single: creating new pyro object for <class '__main__.CrowdService'>
+[2023-02-21 15:21:21.965,Pyro4.threadpoolserver,DEBUG] connected ('127.0.0.1', 36932) - unencrypted
+[2023-02-21 15:21:21.965,Pyro4.threadpool,DEBUG] worker counts: 2 busy, 2 idle
+[2023-02-21 15:21:21.965,Pyro4.threadpoolserver,DEBUG] connected ('127.0.0.1', 36942) - unencrypted
+[2023-02-21 15:21:21.965,Pyro4.threadpool,DEBUG] worker counts: 3 busy, 1 idle
+[2023-02-21 15:21:21.965,Pyro4.core,DEBUG] from meta: methods=['acquire_control_velocities', 'acquire_destroy_list', 'acquire_local_intentions', 'acquire_new_bikes', 'acquire_new_cars', 'acquire_new_pedestrians', 'append_destroy_list', 'append_new_bikes', 'append_new_cars', 'append_new_pedestrians', 'extend_destroy_list', 'release_control_velocities', 'release_destroy_list', 'release_local_intentions', 'release_new_bikes', 'release_new_cars', 'release_new_pedestrians'], oneway methods=[], attributes=['control_velocities', 'destroy_list', 'forbidden_bounds', 'local_intentions', 'new_bikes', 'new_cars', 'new_pedestrians', 'simulation_bounds', 'spawn_bike', 'spawn_car', 'spawn_pedestrian']
+[2023-02-21 15:21:21.965,Pyro4.core,DEBUG] from meta: methods=['acquire_control_velocities', 'acquire_destroy_list', 'acquire_local_intentions', 'acquire_new_bikes', 'acquire_new_cars', 'acquire_new_pedestrians', 'append_destroy_list', 'append_new_bikes', 'append_new_cars', 'append_new_pedestrians', 'extend_destroy_list', 'release_control_velocities', 'release_destroy_list', 'release_local_intentions', 'release_new_bikes', 'release_new_cars', 'release_new_pedestrians'], oneway methods=[], attributes=['control_velocities', 'destroy_list', 'forbidden_bounds', 'local_intentions', 'new_bikes', 'new_cars', 'new_pedestrians', 'simulation_bounds', 'spawn_bike', 'spawn_car', 'spawn_pedestrian']
+[2023-02-21 15:21:21.965,Pyro4.core,DEBUG] connected to PYRO:crowdservice.warehouse@localhost:23010 - IPv4 - unencrypted
+[2023-02-21 15:21:21.965,Pyro4.core,DEBUG] connected to PYRO:crowdservice.warehouse@localhost:23010 - IPv4 - unencrypted
+[2023-02-21 15:21:21.965,Pyro4.core,DEBUG] reusing existing metadata
+[2023-02-21 15:21:21.965,Pyro4.core,DEBUG] reusing existing metadata
+[2023-02-21 15:21:26.280,Pyro4.threadpoolserver,DEBUG] connected ('127.0.0.1', 36958) - unencrypted
+[2023-02-21 15:21:26.280,Pyro4.threadpool,DEBUG] worker counts: 4 busy, 0 idle
+[2023-02-21 15:22:09.305,Pyro4.core,DEBUG] connection released
+[2023-02-21 15:22:09.305,Pyro4.threadpoolserver,DEBUG] disconnected ('127.0.0.1', 36916)
+[2023-02-21 15:22:09.305,Pyro4.threadpool,DEBUG] worker counts: 3 busy, 1 idle
+[2023-02-21 15:22:13.509,Pyro4.threadpoolserver,DEBUG] disconnected ('127.0.0.1', 36958)
+[2023-02-21 15:22:13.509,Pyro4.threadpool,DEBUG] worker counts: 2 busy, 2 idle
+[2023-02-21 15:42:50.205,Pyro4,INFO] Pyro log configured using built-in defaults, level=DEBUG
+[2023-02-21 15:42:50.217,Pyro4.core,DEBUG] exposing all members of <class 'Pyro4.core.DaemonObject'>
+[2023-02-21 15:42:50.847,Pyro4.core,DEBUG] exposing all members of <class '__main__.CrowdService'>
+[2023-02-21 15:42:50.854,Pyro4.threadpoolserver,INFO] starting thread pool socketserver
+[2023-02-21 15:42:50.854,Pyro4.threadpoolserver,INFO] not using SSL
+[2023-02-21 15:42:50.856,Pyro4.threadpool,DEBUG] worker pool created with initial size 4
+[2023-02-21 15:42:50.856,Pyro4.core,DEBUG] daemon created on localhost:23010 - IPv4 (pid 3772)
+[2023-02-21 15:42:50.856,Pyro4.core,DEBUG] accepted serializers: {'marshal', 'serpent', 'json'}
+[2023-02-21 15:42:50.856,Pyro4.core,DEBUG] pyro protocol version: 48  pickle version: 5
+[2023-02-21 15:42:50.856,Pyro4.core,INFO] daemon localhost:23010 entering requestloop
+[2023-02-21 15:42:50.856,Pyro4.threadpoolserver,DEBUG] threadpool server requestloop
+[2023-02-21 15:42:53.864,Pyro4.core,DEBUG] getting metadata for object crowdservice.warehouse
+[2023-02-21 15:42:53.864,Pyro4.core,DEBUG] getting metadata for object crowdservice.warehouse
+[2023-02-21 15:42:53.864,Pyro4.core,DEBUG] connecting to PYRO:crowdservice.warehouse@localhost:23010
+[2023-02-21 15:42:53.864,Pyro4.core,DEBUG] connecting to PYRO:crowdservice.warehouse@localhost:23010
+[2023-02-21 15:42:53.864,Pyro4.core,DEBUG] getting metadata for object crowdservice.warehouse
+[2023-02-21 15:42:53.864,Pyro4.core,DEBUG] connecting to PYRO:crowdservice.warehouse@localhost:23010
+[2023-02-21 15:42:53.865,Pyro4.threadpoolserver,DEBUG] connected ('127.0.0.1', 34770) - unencrypted
+[2023-02-21 15:42:53.865,Pyro4.threadpool,DEBUG] worker counts: 1 busy, 3 idle
+[2023-02-21 15:42:53.866,Pyro4.threadpoolserver,DEBUG] connected ('127.0.0.1', 34768) - unencrypted
+[2023-02-21 15:42:53.866,Pyro4.threadpool,DEBUG] worker counts: 2 busy, 2 idle
+[2023-02-21 15:42:53.866,Pyro4.threadpoolserver,DEBUG] connected ('127.0.0.1', 34766) - unencrypted
+[2023-02-21 15:42:53.866,Pyro4.threadpool,DEBUG] worker counts: 3 busy, 1 idle
+[2023-02-21 15:42:53.866,Pyro4.core,DEBUG] from meta: methods=['acquire_control_velocities', 'acquire_destroy_list', 'acquire_local_intentions', 'acquire_new_bikes', 'acquire_new_cars', 'acquire_new_pedestrians', 'append_destroy_list', 'append_new_bikes', 'append_new_cars', 'append_new_pedestrians', 'extend_destroy_list', 'release_control_velocities', 'release_destroy_list', 'release_local_intentions', 'release_new_bikes', 'release_new_cars', 'release_new_pedestrians'], oneway methods=[], attributes=['control_velocities', 'destroy_list', 'forbidden_bounds', 'local_intentions', 'new_bikes', 'new_cars', 'new_pedestrians', 'simulation_bounds', 'spawn_bike', 'spawn_car', 'spawn_pedestrian']
+[2023-02-21 15:42:53.866,Pyro4.core,DEBUG] connected to PYRO:crowdservice.warehouse@localhost:23010 - IPv4 - unencrypted
+[2023-02-21 15:42:53.866,Pyro4.core,DEBUG] reusing existing metadata
+[2023-02-21 15:42:53.866,Pyro4.core,DEBUG] from meta: methods=['acquire_control_velocities', 'acquire_destroy_list', 'acquire_local_intentions', 'acquire_new_bikes', 'acquire_new_cars', 'acquire_new_pedestrians', 'append_destroy_list', 'append_new_bikes', 'append_new_cars', 'append_new_pedestrians', 'extend_destroy_list', 'release_control_velocities', 'release_destroy_list', 'release_local_intentions', 'release_new_bikes', 'release_new_cars', 'release_new_pedestrians'], oneway methods=[], attributes=['control_velocities', 'destroy_list', 'forbidden_bounds', 'local_intentions', 'new_bikes', 'new_cars', 'new_pedestrians', 'simulation_bounds', 'spawn_bike', 'spawn_car', 'spawn_pedestrian']
+[2023-02-21 15:42:53.866,Pyro4.core,DEBUG] connected to PYRO:crowdservice.warehouse@localhost:23010 - IPv4 - unencrypted
+[2023-02-21 15:42:53.866,Pyro4.core,DEBUG] reusing existing metadata
+[2023-02-21 15:42:53.866,Pyro4.core,DEBUG] from meta: methods=['acquire_control_velocities', 'acquire_destroy_list', 'acquire_local_intentions', 'acquire_new_bikes', 'acquire_new_cars', 'acquire_new_pedestrians', 'append_destroy_list', 'append_new_bikes', 'append_new_cars', 'append_new_pedestrians', 'extend_destroy_list', 'release_control_velocities', 'release_destroy_list', 'release_local_intentions', 'release_new_bikes', 'release_new_cars', 'release_new_pedestrians'], oneway methods=[], attributes=['control_velocities', 'destroy_list', 'forbidden_bounds', 'local_intentions', 'new_bikes', 'new_cars', 'new_pedestrians', 'simulation_bounds', 'spawn_bike', 'spawn_car', 'spawn_pedestrian']
+[2023-02-21 15:42:53.866,Pyro4.core,DEBUG] instancemode single: creating new pyro object for <class '__main__.CrowdService'>
+[2023-02-21 15:42:53.866,Pyro4.core,DEBUG] connected to PYRO:crowdservice.warehouse@localhost:23010 - IPv4 - unencrypted
+[2023-02-21 15:42:53.866,Pyro4.core,DEBUG] reusing existing metadata
+[2023-02-21 15:42:58.189,Pyro4.threadpoolserver,DEBUG] connected ('127.0.0.1', 34792) - unencrypted
+[2023-02-21 15:42:58.189,Pyro4.threadpool,DEBUG] worker counts: 4 busy, 0 idle
+[2023-02-21 15:43:01.840,Pyro4.threadpoolserver,DEBUG] disconnected ('127.0.0.1', 34792)
+[2023-02-21 15:43:01.841,Pyro4.threadpool,DEBUG] worker counts: 3 busy, 1 idle
+[2023-02-21 15:43:13.525,Pyro4.core,DEBUG] connection released
+[2023-02-21 15:43:13.526,Pyro4.threadpoolserver,DEBUG] disconnected ('127.0.0.1', 34770)
+[2023-02-21 15:43:13.526,Pyro4.threadpool,DEBUG] worker counts: 2 busy, 2 idle
+[2023-02-21 15:48:48.882,Pyro4,INFO] Pyro log configured using built-in defaults, level=DEBUG
+[2023-02-21 15:48:48.893,Pyro4.core,DEBUG] exposing all members of <class 'Pyro4.core.DaemonObject'>
+[2023-02-21 15:48:49.523,Pyro4.core,DEBUG] exposing all members of <class '__main__.CrowdService'>
+[2023-02-21 15:48:49.528,Pyro4.threadpoolserver,INFO] starting thread pool socketserver
+[2023-02-21 15:48:49.528,Pyro4.threadpoolserver,INFO] not using SSL
+[2023-02-21 15:48:49.529,Pyro4.threadpool,DEBUG] worker pool created with initial size 4
+[2023-02-21 15:48:49.530,Pyro4.core,DEBUG] daemon created on localhost:23010 - IPv4 (pid 3992)
+[2023-02-21 15:48:49.530,Pyro4.core,DEBUG] accepted serializers: {'serpent', 'json', 'marshal'}
+[2023-02-21 15:48:49.530,Pyro4.core,DEBUG] pyro protocol version: 48  pickle version: 5
+[2023-02-21 15:48:49.530,Pyro4.core,INFO] daemon localhost:23010 entering requestloop
+[2023-02-21 15:48:49.530,Pyro4.threadpoolserver,DEBUG] threadpool server requestloop
+[2023-02-21 15:48:52.538,Pyro4.core,DEBUG] getting metadata for object crowdservice.warehouse
+[2023-02-21 15:48:52.539,Pyro4.core,DEBUG] connecting to PYRO:crowdservice.warehouse@localhost:23010
+[2023-02-21 15:48:52.539,Pyro4.core,DEBUG] getting metadata for object crowdservice.warehouse
+[2023-02-21 15:48:52.539,Pyro4.core,DEBUG] connecting to PYRO:crowdservice.warehouse@localhost:23010
+[2023-02-21 15:48:52.540,Pyro4.threadpoolserver,DEBUG] connected ('127.0.0.1', 51350) - unencrypted
+[2023-02-21 15:48:52.540,Pyro4.threadpool,DEBUG] worker counts: 1 busy, 3 idle
+[2023-02-21 15:48:52.540,Pyro4.core,DEBUG] getting metadata for object crowdservice.warehouse
+[2023-02-21 15:48:52.540,Pyro4.core,DEBUG] connecting to PYRO:crowdservice.warehouse@localhost:23010
+[2023-02-21 15:48:52.541,Pyro4.threadpoolserver,DEBUG] connected ('127.0.0.1', 51356) - unencrypted
+[2023-02-21 15:48:52.541,Pyro4.threadpool,DEBUG] worker counts: 2 busy, 2 idle
+[2023-02-21 15:48:52.541,Pyro4.core,DEBUG] from meta: methods=['acquire_control_velocities', 'acquire_destroy_list', 'acquire_local_intentions', 'acquire_new_bikes', 'acquire_new_cars', 'acquire_new_pedestrians', 'append_destroy_list', 'append_new_bikes', 'append_new_cars', 'append_new_pedestrians', 'extend_destroy_list', 'release_control_velocities', 'release_destroy_list', 'release_local_intentions', 'release_new_bikes', 'release_new_cars', 'release_new_pedestrians'], oneway methods=[], attributes=['control_velocities', 'destroy_list', 'forbidden_bounds', 'local_intentions', 'new_bikes', 'new_cars', 'new_pedestrians', 'simulation_bounds', 'spawn_bike', 'spawn_car', 'spawn_pedestrian']
+[2023-02-21 15:48:52.541,Pyro4.core,DEBUG] connected to PYRO:crowdservice.warehouse@localhost:23010 - IPv4 - unencrypted
+[2023-02-21 15:48:52.541,Pyro4.core,DEBUG] reusing existing metadata
+[2023-02-21 15:48:52.541,Pyro4.core,DEBUG] from meta: methods=['acquire_control_velocities', 'acquire_destroy_list', 'acquire_local_intentions', 'acquire_new_bikes', 'acquire_new_cars', 'acquire_new_pedestrians', 'append_destroy_list', 'append_new_bikes', 'append_new_cars', 'append_new_pedestrians', 'extend_destroy_list', 'release_control_velocities', 'release_destroy_list', 'release_local_intentions', 'release_new_bikes', 'release_new_cars', 'release_new_pedestrians'], oneway methods=[], attributes=['control_velocities', 'destroy_list', 'forbidden_bounds', 'local_intentions', 'new_bikes', 'new_cars', 'new_pedestrians', 'simulation_bounds', 'spawn_bike', 'spawn_car', 'spawn_pedestrian']
+[2023-02-21 15:48:52.541,Pyro4.core,DEBUG] connected to PYRO:crowdservice.warehouse@localhost:23010 - IPv4 - unencrypted
+[2023-02-21 15:48:52.541,Pyro4.core,DEBUG] reusing existing metadata
+[2023-02-21 15:48:52.541,Pyro4.core,DEBUG] instancemode single: creating new pyro object for <class '__main__.CrowdService'>
+[2023-02-21 15:48:52.541,Pyro4.threadpoolserver,DEBUG] connected ('127.0.0.1', 51364) - unencrypted
+[2023-02-21 15:48:52.541,Pyro4.threadpool,DEBUG] worker counts: 3 busy, 1 idle
+[2023-02-21 15:48:52.542,Pyro4.core,DEBUG] from meta: methods=['acquire_control_velocities', 'acquire_destroy_list', 'acquire_local_intentions', 'acquire_new_bikes', 'acquire_new_cars', 'acquire_new_pedestrians', 'append_destroy_list', 'append_new_bikes', 'append_new_cars', 'append_new_pedestrians', 'extend_destroy_list', 'release_control_velocities', 'release_destroy_list', 'release_local_intentions', 'release_new_bikes', 'release_new_cars', 'release_new_pedestrians'], oneway methods=[], attributes=['control_velocities', 'destroy_list', 'forbidden_bounds', 'local_intentions', 'new_bikes', 'new_cars', 'new_pedestrians', 'simulation_bounds', 'spawn_bike', 'spawn_car', 'spawn_pedestrian']
+[2023-02-21 15:48:52.542,Pyro4.core,DEBUG] connected to PYRO:crowdservice.warehouse@localhost:23010 - IPv4 - unencrypted
+[2023-02-21 15:48:52.542,Pyro4.core,DEBUG] reusing existing metadata
+[2023-02-21 15:48:56.864,Pyro4.threadpoolserver,DEBUG] connected ('127.0.0.1', 36656) - unencrypted
+[2023-02-21 15:48:56.864,Pyro4.threadpool,DEBUG] worker counts: 4 busy, 0 idle
+[2023-02-21 15:50:10.246,Pyro4,INFO] Pyro log configured using built-in defaults, level=DEBUG
+[2023-02-21 15:50:10.257,Pyro4.core,DEBUG] exposing all members of <class 'Pyro4.core.DaemonObject'>
+[2023-02-21 15:50:10.889,Pyro4.core,DEBUG] exposing all members of <class '__main__.CrowdService'>
+[2023-02-21 15:50:10.894,Pyro4.threadpoolserver,INFO] starting thread pool socketserver
+[2023-02-21 15:50:10.894,Pyro4.threadpoolserver,INFO] not using SSL
+[2023-02-21 15:50:10.895,Pyro4.threadpool,DEBUG] worker pool created with initial size 4
+[2023-02-21 15:50:10.895,Pyro4.core,DEBUG] daemon created on localhost:23010 - IPv4 (pid 4545)
+[2023-02-21 15:50:10.895,Pyro4.core,DEBUG] accepted serializers: {'serpent', 'json', 'marshal'}
+[2023-02-21 15:50:10.895,Pyro4.core,DEBUG] pyro protocol version: 48  pickle version: 5
+[2023-02-21 15:50:10.895,Pyro4.core,INFO] daemon localhost:23010 entering requestloop
+[2023-02-21 15:50:10.895,Pyro4.threadpoolserver,DEBUG] threadpool server requestloop
+[2023-02-21 15:50:13.905,Pyro4.core,DEBUG] getting metadata for object crowdservice.warehouse
+[2023-02-21 15:50:13.905,Pyro4.core,DEBUG] connecting to PYRO:crowdservice.warehouse@localhost:23010
+[2023-02-21 15:50:13.905,Pyro4.core,DEBUG] getting metadata for object crowdservice.warehouse
+[2023-02-21 15:50:13.905,Pyro4.core,DEBUG] getting metadata for object crowdservice.warehouse
+[2023-02-21 15:50:13.906,Pyro4.core,DEBUG] connecting to PYRO:crowdservice.warehouse@localhost:23010
+[2023-02-21 15:50:13.906,Pyro4.core,DEBUG] connecting to PYRO:crowdservice.warehouse@localhost:23010
+[2023-02-21 15:50:13.907,Pyro4.threadpoolserver,DEBUG] connected ('127.0.0.1', 47762) - unencrypted
+[2023-02-21 15:50:13.907,Pyro4.threadpool,DEBUG] worker counts: 1 busy, 3 idle
+[2023-02-21 15:50:13.907,Pyro4.threadpoolserver,DEBUG] connected ('127.0.0.1', 47778) - unencrypted
+[2023-02-21 15:50:13.907,Pyro4.threadpool,DEBUG] worker counts: 2 busy, 2 idle
+[2023-02-21 15:50:13.907,Pyro4.threadpoolserver,DEBUG] connected ('127.0.0.1', 47780) - unencrypted
+[2023-02-21 15:50:13.907,Pyro4.threadpool,DEBUG] worker counts: 3 busy, 1 idle
+[2023-02-21 15:50:13.907,Pyro4.core,DEBUG] from meta: methods=['acquire_control_velocities', 'acquire_destroy_list', 'acquire_local_intentions', 'acquire_new_bikes', 'acquire_new_cars', 'acquire_new_pedestrians', 'append_destroy_list', 'append_new_bikes', 'append_new_cars', 'append_new_pedestrians', 'extend_destroy_list', 'release_control_velocities', 'release_destroy_list', 'release_local_intentions', 'release_new_bikes', 'release_new_cars', 'release_new_pedestrians'], oneway methods=[], attributes=['control_velocities', 'destroy_list', 'forbidden_bounds', 'local_intentions', 'new_bikes', 'new_cars', 'new_pedestrians', 'simulation_bounds', 'spawn_bike', 'spawn_car', 'spawn_pedestrian']
+[2023-02-21 15:50:13.908,Pyro4.core,DEBUG] connected to PYRO:crowdservice.warehouse@localhost:23010 - IPv4 - unencrypted
+[2023-02-21 15:50:13.908,Pyro4.core,DEBUG] reusing existing metadata
+[2023-02-21 15:50:13.908,Pyro4.core,DEBUG] from meta: methods=['acquire_control_velocities', 'acquire_destroy_list', 'acquire_local_intentions', 'acquire_new_bikes', 'acquire_new_cars', 'acquire_new_pedestrians', 'append_destroy_list', 'append_new_bikes', 'append_new_cars', 'append_new_pedestrians', 'extend_destroy_list', 'release_control_velocities', 'release_destroy_list', 'release_local_intentions', 'release_new_bikes', 'release_new_cars', 'release_new_pedestrians'], oneway methods=[], attributes=['control_velocities', 'destroy_list', 'forbidden_bounds', 'local_intentions', 'new_bikes', 'new_cars', 'new_pedestrians', 'simulation_bounds', 'spawn_bike', 'spawn_car', 'spawn_pedestrian']
+[2023-02-21 15:50:13.908,Pyro4.core,DEBUG] connected to PYRO:crowdservice.warehouse@localhost:23010 - IPv4 - unencrypted
+[2023-02-21 15:50:13.908,Pyro4.core,DEBUG] reusing existing metadata
+[2023-02-21 15:50:13.908,Pyro4.core,DEBUG] instancemode single: creating new pyro object for <class '__main__.CrowdService'>
+[2023-02-21 15:50:13.908,Pyro4.core,DEBUG] from meta: methods=['acquire_control_velocities', 'acquire_destroy_list', 'acquire_local_intentions', 'acquire_new_bikes', 'acquire_new_cars', 'acquire_new_pedestrians', 'append_destroy_list', 'append_new_bikes', 'append_new_cars', 'append_new_pedestrians', 'extend_destroy_list', 'release_control_velocities', 'release_destroy_list', 'release_local_intentions', 'release_new_bikes', 'release_new_cars', 'release_new_pedestrians'], oneway methods=[], attributes=['control_velocities', 'destroy_list', 'forbidden_bounds', 'local_intentions', 'new_bikes', 'new_cars', 'new_pedestrians', 'simulation_bounds', 'spawn_bike', 'spawn_car', 'spawn_pedestrian']
+[2023-02-21 15:50:13.908,Pyro4.core,DEBUG] connected to PYRO:crowdservice.warehouse@localhost:23010 - IPv4 - unencrypted
+[2023-02-21 15:50:13.908,Pyro4.core,DEBUG] reusing existing metadata
+[2023-02-21 15:50:18.232,Pyro4.threadpoolserver,DEBUG] connected ('127.0.0.1', 51584) - unencrypted
+[2023-02-21 15:50:18.232,Pyro4.threadpool,DEBUG] worker counts: 4 busy, 0 idle
+[2023-02-21 15:51:16.234,Pyro4,INFO] Pyro log configured using built-in defaults, level=DEBUG
+[2023-02-21 15:51:16.246,Pyro4.core,DEBUG] exposing all members of <class 'Pyro4.core.DaemonObject'>
+[2023-02-21 15:51:16.876,Pyro4.core,DEBUG] exposing all members of <class '__main__.CrowdService'>
+[2023-02-21 15:51:16.880,Pyro4.threadpoolserver,INFO] starting thread pool socketserver
+[2023-02-21 15:51:16.880,Pyro4.threadpoolserver,INFO] not using SSL
+[2023-02-21 15:51:16.881,Pyro4.threadpool,DEBUG] worker pool created with initial size 4
+[2023-02-21 15:51:16.882,Pyro4.core,DEBUG] daemon created on localhost:23010 - IPv4 (pid 5810)
+[2023-02-21 15:51:16.882,Pyro4.core,DEBUG] accepted serializers: {'json', 'marshal', 'serpent'}
+[2023-02-21 15:51:16.882,Pyro4.core,DEBUG] pyro protocol version: 48  pickle version: 5
+[2023-02-21 15:51:16.882,Pyro4.core,INFO] daemon localhost:23010 entering requestloop
+[2023-02-21 15:51:16.882,Pyro4.threadpoolserver,DEBUG] threadpool server requestloop
+[2023-02-21 15:51:19.891,Pyro4.core,DEBUG] getting metadata for object crowdservice.warehouse
+[2023-02-21 15:51:19.891,Pyro4.core,DEBUG] connecting to PYRO:crowdservice.warehouse@localhost:23010
+[2023-02-21 15:51:19.892,Pyro4.core,DEBUG] getting metadata for object crowdservice.warehouse
+[2023-02-21 15:51:19.892,Pyro4.core,DEBUG] connecting to PYRO:crowdservice.warehouse@localhost:23010
+[2023-02-21 15:51:19.892,Pyro4.threadpoolserver,DEBUG] connected ('127.0.0.1', 60852) - unencrypted
+[2023-02-21 15:51:19.892,Pyro4.threadpool,DEBUG] worker counts: 1 busy, 3 idle
+[2023-02-21 15:51:19.893,Pyro4.core,DEBUG] from meta: methods=['acquire_control_velocities', 'acquire_destroy_list', 'acquire_local_intentions', 'acquire_new_bikes', 'acquire_new_cars', 'acquire_new_pedestrians', 'append_destroy_list', 'append_new_bikes', 'append_new_cars', 'append_new_pedestrians', 'extend_destroy_list', 'release_control_velocities', 'release_destroy_list', 'release_local_intentions', 'release_new_bikes', 'release_new_cars', 'release_new_pedestrians'], oneway methods=[], attributes=['control_velocities', 'destroy_list', 'forbidden_bounds', 'local_intentions', 'new_bikes', 'new_cars', 'new_pedestrians', 'simulation_bounds', 'spawn_bike', 'spawn_car', 'spawn_pedestrian']
+[2023-02-21 15:51:19.893,Pyro4.core,DEBUG] connected to PYRO:crowdservice.warehouse@localhost:23010 - IPv4 - unencrypted
+[2023-02-21 15:51:19.893,Pyro4.core,DEBUG] reusing existing metadata
+[2023-02-21 15:51:19.893,Pyro4.core,DEBUG] instancemode single: creating new pyro object for <class '__main__.CrowdService'>
+[2023-02-21 15:51:19.893,Pyro4.threadpoolserver,DEBUG] connected ('127.0.0.1', 60858) - unencrypted
+[2023-02-21 15:51:19.893,Pyro4.threadpool,DEBUG] worker counts: 2 busy, 2 idle
+[2023-02-21 15:51:19.894,Pyro4.core,DEBUG] from meta: methods=['acquire_control_velocities', 'acquire_destroy_list', 'acquire_local_intentions', 'acquire_new_bikes', 'acquire_new_cars', 'acquire_new_pedestrians', 'append_destroy_list', 'append_new_bikes', 'append_new_cars', 'append_new_pedestrians', 'extend_destroy_list', 'release_control_velocities', 'release_destroy_list', 'release_local_intentions', 'release_new_bikes', 'release_new_cars', 'release_new_pedestrians'], oneway methods=[], attributes=['control_velocities', 'destroy_list', 'forbidden_bounds', 'local_intentions', 'new_bikes', 'new_cars', 'new_pedestrians', 'simulation_bounds', 'spawn_bike', 'spawn_car', 'spawn_pedestrian']
+[2023-02-21 15:51:19.894,Pyro4.core,DEBUG] connected to PYRO:crowdservice.warehouse@localhost:23010 - IPv4 - unencrypted
+[2023-02-21 15:51:19.894,Pyro4.core,DEBUG] reusing existing metadata
+[2023-02-21 15:51:19.894,Pyro4.core,DEBUG] getting metadata for object crowdservice.warehouse
+[2023-02-21 15:51:19.894,Pyro4.core,DEBUG] connecting to PYRO:crowdservice.warehouse@localhost:23010
+[2023-02-21 15:51:19.895,Pyro4.threadpoolserver,DEBUG] connected ('127.0.0.1', 60874) - unencrypted
+[2023-02-21 15:51:19.895,Pyro4.threadpool,DEBUG] worker counts: 3 busy, 1 idle
+[2023-02-21 15:51:19.895,Pyro4.core,DEBUG] from meta: methods=['acquire_control_velocities', 'acquire_destroy_list', 'acquire_local_intentions', 'acquire_new_bikes', 'acquire_new_cars', 'acquire_new_pedestrians', 'append_destroy_list', 'append_new_bikes', 'append_new_cars', 'append_new_pedestrians', 'extend_destroy_list', 'release_control_velocities', 'release_destroy_list', 'release_local_intentions', 'release_new_bikes', 'release_new_cars', 'release_new_pedestrians'], oneway methods=[], attributes=['control_velocities', 'destroy_list', 'forbidden_bounds', 'local_intentions', 'new_bikes', 'new_cars', 'new_pedestrians', 'simulation_bounds', 'spawn_bike', 'spawn_car', 'spawn_pedestrian']
+[2023-02-21 15:51:19.895,Pyro4.core,DEBUG] connected to PYRO:crowdservice.warehouse@localhost:23010 - IPv4 - unencrypted
+[2023-02-21 15:51:19.895,Pyro4.core,DEBUG] reusing existing metadata
+[2023-02-21 15:51:24.220,Pyro4.threadpoolserver,DEBUG] connected ('127.0.0.1', 60878) - unencrypted
+[2023-02-21 15:51:24.220,Pyro4.threadpool,DEBUG] worker counts: 4 busy, 0 idle
+[2023-02-21 15:52:02.828,Pyro4,INFO] Pyro log configured using built-in defaults, level=DEBUG
+[2023-02-21 15:52:02.839,Pyro4.core,DEBUG] exposing all members of <class 'Pyro4.core.DaemonObject'>
+[2023-02-21 15:52:03.470,Pyro4.core,DEBUG] exposing all members of <class '__main__.CrowdService'>
+[2023-02-21 15:52:03.474,Pyro4.threadpoolserver,INFO] starting thread pool socketserver
+[2023-02-21 15:52:03.474,Pyro4.threadpoolserver,INFO] not using SSL
+[2023-02-21 15:52:03.476,Pyro4.threadpool,DEBUG] worker pool created with initial size 4
+[2023-02-21 15:52:03.476,Pyro4.core,DEBUG] daemon created on localhost:23010 - IPv4 (pid 6691)
+[2023-02-21 15:52:03.476,Pyro4.core,DEBUG] accepted serializers: {'serpent', 'marshal', 'json'}
+[2023-02-21 15:52:03.476,Pyro4.core,DEBUG] pyro protocol version: 48  pickle version: 5
+[2023-02-21 15:52:03.476,Pyro4.core,INFO] daemon localhost:23010 entering requestloop
+[2023-02-21 15:52:03.476,Pyro4.threadpoolserver,DEBUG] threadpool server requestloop
+[2023-02-21 15:52:06.485,Pyro4.core,DEBUG] getting metadata for object crowdservice.warehouse
+[2023-02-21 15:52:06.485,Pyro4.core,DEBUG] getting metadata for object crowdservice.warehouse
+[2023-02-21 15:52:06.485,Pyro4.core,DEBUG] getting metadata for object crowdservice.warehouse
+[2023-02-21 15:52:06.485,Pyro4.core,DEBUG] connecting to PYRO:crowdservice.warehouse@localhost:23010
+[2023-02-21 15:52:06.485,Pyro4.core,DEBUG] connecting to PYRO:crowdservice.warehouse@localhost:23010
+[2023-02-21 15:52:06.485,Pyro4.core,DEBUG] connecting to PYRO:crowdservice.warehouse@localhost:23010
+[2023-02-21 15:52:06.486,Pyro4.threadpoolserver,DEBUG] connected ('127.0.0.1', 45248) - unencrypted
+[2023-02-21 15:52:06.486,Pyro4.threadpool,DEBUG] worker counts: 1 busy, 3 idle
+[2023-02-21 15:52:06.487,Pyro4.threadpoolserver,DEBUG] connected ('127.0.0.1', 45250) - unencrypted
+[2023-02-21 15:52:06.487,Pyro4.threadpool,DEBUG] worker counts: 2 busy, 2 idle
+[2023-02-21 15:52:06.487,Pyro4.threadpoolserver,DEBUG] connected ('127.0.0.1', 45252) - unencrypted
+[2023-02-21 15:52:06.487,Pyro4.threadpool,DEBUG] worker counts: 3 busy, 1 idle
+[2023-02-21 15:52:06.487,Pyro4.core,DEBUG] from meta: methods=['acquire_control_velocities', 'acquire_destroy_list', 'acquire_local_intentions', 'acquire_new_bikes', 'acquire_new_cars', 'acquire_new_pedestrians', 'append_destroy_list', 'append_new_bikes', 'append_new_cars', 'append_new_pedestrians', 'extend_destroy_list', 'release_control_velocities', 'release_destroy_list', 'release_local_intentions', 'release_new_bikes', 'release_new_cars', 'release_new_pedestrians'], oneway methods=[], attributes=['control_velocities', 'destroy_list', 'forbidden_bounds', 'local_intentions', 'new_bikes', 'new_cars', 'new_pedestrians', 'simulation_bounds', 'spawn_bike', 'spawn_car', 'spawn_pedestrian']
+[2023-02-21 15:52:06.487,Pyro4.core,DEBUG] connected to PYRO:crowdservice.warehouse@localhost:23010 - IPv4 - unencrypted
+[2023-02-21 15:52:06.487,Pyro4.core,DEBUG] reusing existing metadata
+[2023-02-21 15:52:06.487,Pyro4.core,DEBUG] from meta: methods=['acquire_control_velocities', 'acquire_destroy_list', 'acquire_local_intentions', 'acquire_new_bikes', 'acquire_new_cars', 'acquire_new_pedestrians', 'append_destroy_list', 'append_new_bikes', 'append_new_cars', 'append_new_pedestrians', 'extend_destroy_list', 'release_control_velocities', 'release_destroy_list', 'release_local_intentions', 'release_new_bikes', 'release_new_cars', 'release_new_pedestrians'], oneway methods=[], attributes=['control_velocities', 'destroy_list', 'forbidden_bounds', 'local_intentions', 'new_bikes', 'new_cars', 'new_pedestrians', 'simulation_bounds', 'spawn_bike', 'spawn_car', 'spawn_pedestrian']
+[2023-02-21 15:52:06.487,Pyro4.core,DEBUG] instancemode single: creating new pyro object for <class '__main__.CrowdService'>
+[2023-02-21 15:52:06.487,Pyro4.core,DEBUG] connected to PYRO:crowdservice.warehouse@localhost:23010 - IPv4 - unencrypted
+[2023-02-21 15:52:06.487,Pyro4.core,DEBUG] reusing existing metadata
+[2023-02-21 15:52:06.487,Pyro4.core,DEBUG] from meta: methods=['acquire_control_velocities', 'acquire_destroy_list', 'acquire_local_intentions', 'acquire_new_bikes', 'acquire_new_cars', 'acquire_new_pedestrians', 'append_destroy_list', 'append_new_bikes', 'append_new_cars', 'append_new_pedestrians', 'extend_destroy_list', 'release_control_velocities', 'release_destroy_list', 'release_local_intentions', 'release_new_bikes', 'release_new_cars', 'release_new_pedestrians'], oneway methods=[], attributes=['control_velocities', 'destroy_list', 'forbidden_bounds', 'local_intentions', 'new_bikes', 'new_cars', 'new_pedestrians', 'simulation_bounds', 'spawn_bike', 'spawn_car', 'spawn_pedestrian']
+[2023-02-21 15:52:06.487,Pyro4.core,DEBUG] connected to PYRO:crowdservice.warehouse@localhost:23010 - IPv4 - unencrypted
+[2023-02-21 15:52:06.487,Pyro4.core,DEBUG] reusing existing metadata
+[2023-02-21 15:52:10.816,Pyro4.threadpoolserver,DEBUG] connected ('127.0.0.1', 45274) - unencrypted
+[2023-02-21 15:52:10.816,Pyro4.threadpool,DEBUG] worker counts: 4 busy, 0 idle
+[2023-02-21 15:53:35.306,Pyro4,INFO] Pyro log configured using built-in defaults, level=DEBUG
+[2023-02-21 15:53:35.318,Pyro4.core,DEBUG] exposing all members of <class 'Pyro4.core.DaemonObject'>
+[2023-02-21 15:53:35.948,Pyro4.core,DEBUG] exposing all members of <class '__main__.CrowdService'>
+[2023-02-21 15:53:35.952,Pyro4.threadpoolserver,INFO] starting thread pool socketserver
+[2023-02-21 15:53:35.953,Pyro4.threadpoolserver,INFO] not using SSL
+[2023-02-21 15:53:35.954,Pyro4.threadpool,DEBUG] worker pool created with initial size 4
+[2023-02-21 15:53:35.954,Pyro4.core,DEBUG] daemon created on localhost:23010 - IPv4 (pid 7882)
+[2023-02-21 15:53:35.954,Pyro4.core,DEBUG] accepted serializers: {'json', 'serpent', 'marshal'}
+[2023-02-21 15:53:35.954,Pyro4.core,DEBUG] pyro protocol version: 48  pickle version: 5
+[2023-02-21 15:53:35.954,Pyro4.core,INFO] daemon localhost:23010 entering requestloop
+[2023-02-21 15:53:35.954,Pyro4.threadpoolserver,DEBUG] threadpool server requestloop
+[2023-02-21 15:53:38.963,Pyro4.core,DEBUG] getting metadata for object crowdservice.warehouse
+[2023-02-21 15:53:38.963,Pyro4.core,DEBUG] connecting to PYRO:crowdservice.warehouse@localhost:23010
+[2023-02-21 15:53:38.965,Pyro4.threadpoolserver,DEBUG] connected ('127.0.0.1', 58862) - unencrypted
+[2023-02-21 15:53:38.965,Pyro4.threadpool,DEBUG] worker counts: 1 busy, 3 idle
+[2023-02-21 15:53:38.965,Pyro4.core,DEBUG] from meta: methods=['acquire_control_velocities', 'acquire_destroy_list', 'acquire_local_intentions', 'acquire_new_bikes', 'acquire_new_cars', 'acquire_new_pedestrians', 'append_destroy_list', 'append_new_bikes', 'append_new_cars', 'append_new_pedestrians', 'extend_destroy_list', 'release_control_velocities', 'release_destroy_list', 'release_local_intentions', 'release_new_bikes', 'release_new_cars', 'release_new_pedestrians'], oneway methods=[], attributes=['control_velocities', 'destroy_list', 'forbidden_bounds', 'local_intentions', 'new_bikes', 'new_cars', 'new_pedestrians', 'simulation_bounds', 'spawn_bike', 'spawn_car', 'spawn_pedestrian']
+[2023-02-21 15:53:38.965,Pyro4.core,DEBUG] connected to PYRO:crowdservice.warehouse@localhost:23010 - IPv4 - unencrypted
+[2023-02-21 15:53:38.965,Pyro4.core,DEBUG] reusing existing metadata
+[2023-02-21 15:53:38.966,Pyro4.core,DEBUG] instancemode single: creating new pyro object for <class '__main__.CrowdService'>
+[2023-02-21 15:53:38.967,Pyro4.core,DEBUG] getting metadata for object crowdservice.warehouse
+[2023-02-21 15:53:38.967,Pyro4.core,DEBUG] connecting to PYRO:crowdservice.warehouse@localhost:23010
+[2023-02-21 15:53:38.967,Pyro4.core,DEBUG] getting metadata for object crowdservice.warehouse
+[2023-02-21 15:53:38.967,Pyro4.core,DEBUG] connecting to PYRO:crowdservice.warehouse@localhost:23010
+[2023-02-21 15:53:38.969,Pyro4.threadpoolserver,DEBUG] connected ('127.0.0.1', 58864) - unencrypted
+[2023-02-21 15:53:38.969,Pyro4.threadpool,DEBUG] worker counts: 2 busy, 2 idle
+[2023-02-21 15:53:38.969,Pyro4.threadpoolserver,DEBUG] connected ('127.0.0.1', 58866) - unencrypted
+[2023-02-21 15:53:38.969,Pyro4.threadpool,DEBUG] worker counts: 3 busy, 1 idle
+[2023-02-21 15:53:38.969,Pyro4.core,DEBUG] from meta: methods=['acquire_control_velocities', 'acquire_destroy_list', 'acquire_local_intentions', 'acquire_new_bikes', 'acquire_new_cars', 'acquire_new_pedestrians', 'append_destroy_list', 'append_new_bikes', 'append_new_cars', 'append_new_pedestrians', 'extend_destroy_list', 'release_control_velocities', 'release_destroy_list', 'release_local_intentions', 'release_new_bikes', 'release_new_cars', 'release_new_pedestrians'], oneway methods=[], attributes=['control_velocities', 'destroy_list', 'forbidden_bounds', 'local_intentions', 'new_bikes', 'new_cars', 'new_pedestrians', 'simulation_bounds', 'spawn_bike', 'spawn_car', 'spawn_pedestrian']
+[2023-02-21 15:53:38.969,Pyro4.core,DEBUG] connected to PYRO:crowdservice.warehouse@localhost:23010 - IPv4 - unencrypted
+[2023-02-21 15:53:38.969,Pyro4.core,DEBUG] reusing existing metadata
+[2023-02-21 15:53:38.969,Pyro4.core,DEBUG] from meta: methods=['acquire_control_velocities', 'acquire_destroy_list', 'acquire_local_intentions', 'acquire_new_bikes', 'acquire_new_cars', 'acquire_new_pedestrians', 'append_destroy_list', 'append_new_bikes', 'append_new_cars', 'append_new_pedestrians', 'extend_destroy_list', 'release_control_velocities', 'release_destroy_list', 'release_local_intentions', 'release_new_bikes', 'release_new_cars', 'release_new_pedestrians'], oneway methods=[], attributes=['control_velocities', 'destroy_list', 'forbidden_bounds', 'local_intentions', 'new_bikes', 'new_cars', 'new_pedestrians', 'simulation_bounds', 'spawn_bike', 'spawn_car', 'spawn_pedestrian']
+[2023-02-21 15:53:38.969,Pyro4.core,DEBUG] connected to PYRO:crowdservice.warehouse@localhost:23010 - IPv4 - unencrypted
+[2023-02-21 15:53:38.969,Pyro4.core,DEBUG] reusing existing metadata
+[2023-02-21 15:53:43.292,Pyro4.threadpoolserver,DEBUG] connected ('127.0.0.1', 58890) - unencrypted
+[2023-02-21 15:53:43.292,Pyro4.threadpool,DEBUG] worker counts: 4 busy, 0 idle
+[2023-02-21 15:53:49.412,Pyro4.threadpoolserver,DEBUG] disconnected ('127.0.0.1', 58890)
+[2023-02-21 15:53:49.412,Pyro4.threadpool,DEBUG] worker counts: 3 busy, 1 idle
+[2023-02-21 15:54:06.526,Pyro4.threadpoolserver,DEBUG] disconnected ('127.0.0.1', 58862)
+[2023-02-21 15:54:06.526,Pyro4.core,DEBUG] connection released
+[2023-02-21 15:54:06.526,Pyro4.threadpool,DEBUG] worker counts: 2 busy, 2 idle
+[2023-02-21 16:06:37.103,Pyro4,INFO] Pyro log configured using built-in defaults, level=DEBUG
+[2023-02-21 16:06:37.115,Pyro4.core,DEBUG] exposing all members of <class 'Pyro4.core.DaemonObject'>
+[2023-02-21 16:06:37.745,Pyro4.core,DEBUG] exposing all members of <class '__main__.CrowdService'>
+[2023-02-21 16:06:37.752,Pyro4.threadpoolserver,INFO] starting thread pool socketserver
+[2023-02-21 16:06:37.752,Pyro4.threadpoolserver,INFO] not using SSL
+[2023-02-21 16:06:37.754,Pyro4.threadpool,DEBUG] worker pool created with initial size 4
+[2023-02-21 16:06:37.754,Pyro4.core,DEBUG] daemon created on localhost:23010 - IPv4 (pid 3800)
+[2023-02-21 16:06:37.754,Pyro4.core,DEBUG] accepted serializers: {'json', 'serpent', 'marshal'}
+[2023-02-21 16:06:37.754,Pyro4.core,DEBUG] pyro protocol version: 48  pickle version: 5
+[2023-02-21 16:06:37.754,Pyro4.core,INFO] daemon localhost:23010 entering requestloop
+[2023-02-21 16:06:37.754,Pyro4.threadpoolserver,DEBUG] threadpool server requestloop
+[2023-02-21 16:06:40.763,Pyro4.core,DEBUG] getting metadata for object crowdservice.warehouse
+[2023-02-21 16:06:40.764,Pyro4.core,DEBUG] connecting to PYRO:crowdservice.warehouse@localhost:23010
+[2023-02-21 16:06:40.764,Pyro4.core,DEBUG] getting metadata for object crowdservice.warehouse
+[2023-02-21 16:06:40.763,Pyro4.core,DEBUG] getting metadata for object crowdservice.warehouse
+[2023-02-21 16:06:40.764,Pyro4.core,DEBUG] connecting to PYRO:crowdservice.warehouse@localhost:23010
+[2023-02-21 16:06:40.764,Pyro4.core,DEBUG] connecting to PYRO:crowdservice.warehouse@localhost:23010
+[2023-02-21 16:06:40.765,Pyro4.threadpoolserver,DEBUG] connected ('127.0.0.1', 49124) - unencrypted
+[2023-02-21 16:06:40.765,Pyro4.threadpool,DEBUG] worker counts: 1 busy, 3 idle
+[2023-02-21 16:06:40.765,Pyro4.threadpoolserver,DEBUG] connected ('127.0.0.1', 49122) - unencrypted
+[2023-02-21 16:06:40.765,Pyro4.threadpool,DEBUG] worker counts: 2 busy, 2 idle
+[2023-02-21 16:06:40.765,Pyro4.threadpoolserver,DEBUG] connected ('127.0.0.1', 49130) - unencrypted
+[2023-02-21 16:06:40.765,Pyro4.threadpool,DEBUG] worker counts: 3 busy, 1 idle
+[2023-02-21 16:06:40.765,Pyro4.core,DEBUG] from meta: methods=['acquire_control_velocities', 'acquire_destroy_list', 'acquire_local_intentions', 'acquire_new_bikes', 'acquire_new_cars', 'acquire_new_pedestrians', 'append_destroy_list', 'append_new_bikes', 'append_new_cars', 'append_new_pedestrians', 'extend_destroy_list', 'release_control_velocities', 'release_destroy_list', 'release_local_intentions', 'release_new_bikes', 'release_new_cars', 'release_new_pedestrians'], oneway methods=[], attributes=['control_velocities', 'destroy_list', 'forbidden_bounds', 'local_intentions', 'new_bikes', 'new_cars', 'new_pedestrians', 'simulation_bounds', 'spawn_bike', 'spawn_car', 'spawn_pedestrian']
+[2023-02-21 16:06:40.766,Pyro4.core,DEBUG] connected to PYRO:crowdservice.warehouse@localhost:23010 - IPv4 - unencrypted
+[2023-02-21 16:06:40.766,Pyro4.core,DEBUG] reusing existing metadata
+[2023-02-21 16:06:40.766,Pyro4.core,DEBUG] from meta: methods=['acquire_control_velocities', 'acquire_destroy_list', 'acquire_local_intentions', 'acquire_new_bikes', 'acquire_new_cars', 'acquire_new_pedestrians', 'append_destroy_list', 'append_new_bikes', 'append_new_cars', 'append_new_pedestrians', 'extend_destroy_list', 'release_control_velocities', 'release_destroy_list', 'release_local_intentions', 'release_new_bikes', 'release_new_cars', 'release_new_pedestrians'], oneway methods=[], attributes=['control_velocities', 'destroy_list', 'forbidden_bounds', 'local_intentions', 'new_bikes', 'new_cars', 'new_pedestrians', 'simulation_bounds', 'spawn_bike', 'spawn_car', 'spawn_pedestrian']
+[2023-02-21 16:06:40.766,Pyro4.core,DEBUG] connected to PYRO:crowdservice.warehouse@localhost:23010 - IPv4 - unencrypted
+[2023-02-21 16:06:40.766,Pyro4.core,DEBUG] reusing existing metadata
+[2023-02-21 16:06:40.766,Pyro4.core,DEBUG] instancemode single: creating new pyro object for <class '__main__.CrowdService'>
+[2023-02-21 16:06:40.766,Pyro4.core,DEBUG] from meta: methods=['acquire_control_velocities', 'acquire_destroy_list', 'acquire_local_intentions', 'acquire_new_bikes', 'acquire_new_cars', 'acquire_new_pedestrians', 'append_destroy_list', 'append_new_bikes', 'append_new_cars', 'append_new_pedestrians', 'extend_destroy_list', 'release_control_velocities', 'release_destroy_list', 'release_local_intentions', 'release_new_bikes', 'release_new_cars', 'release_new_pedestrians'], oneway methods=[], attributes=['control_velocities', 'destroy_list', 'forbidden_bounds', 'local_intentions', 'new_bikes', 'new_cars', 'new_pedestrians', 'simulation_bounds', 'spawn_bike', 'spawn_car', 'spawn_pedestrian']
+[2023-02-21 16:06:40.766,Pyro4.core,DEBUG] connected to PYRO:crowdservice.warehouse@localhost:23010 - IPv4 - unencrypted
+[2023-02-21 16:06:40.766,Pyro4.core,DEBUG] reusing existing metadata
+[2023-02-21 16:06:45.088,Pyro4.threadpoolserver,DEBUG] connected ('127.0.0.1', 38698) - unencrypted
+[2023-02-21 16:06:45.088,Pyro4.threadpool,DEBUG] worker counts: 4 busy, 0 idle
+[2023-02-21 16:27:52.873,Pyro4,INFO] Pyro log configured using built-in defaults, level=DEBUG
+[2023-02-21 16:27:52.885,Pyro4.core,DEBUG] exposing all members of <class 'Pyro4.core.DaemonObject'>
+[2023-02-21 16:27:53.516,Pyro4.core,DEBUG] exposing all members of <class '__main__.CrowdService'>
+[2023-02-21 16:27:53.520,Pyro4.threadpoolserver,INFO] starting thread pool socketserver
+[2023-02-21 16:27:53.520,Pyro4.threadpoolserver,INFO] not using SSL
+[2023-02-21 16:27:53.521,Pyro4.threadpool,DEBUG] worker pool created with initial size 4
+[2023-02-21 16:27:53.522,Pyro4.core,DEBUG] daemon created on localhost:23010 - IPv4 (pid 6687)
+[2023-02-21 16:27:53.522,Pyro4.core,DEBUG] accepted serializers: {'json', 'serpent', 'marshal'}
+[2023-02-21 16:27:53.522,Pyro4.core,DEBUG] pyro protocol version: 48  pickle version: 5
+[2023-02-21 16:27:53.522,Pyro4.core,INFO] daemon localhost:23010 entering requestloop
+[2023-02-21 16:27:53.522,Pyro4.threadpoolserver,DEBUG] threadpool server requestloop
+[2023-02-21 16:27:56.530,Pyro4.core,DEBUG] getting metadata for object crowdservice.warehouse
+[2023-02-21 16:27:56.530,Pyro4.core,DEBUG] connecting to PYRO:crowdservice.warehouse@localhost:23010
+[2023-02-21 16:27:56.530,Pyro4.core,DEBUG] getting metadata for object crowdservice.warehouse
+[2023-02-21 16:27:56.531,Pyro4.core,DEBUG] connecting to PYRO:crowdservice.warehouse@localhost:23010
+[2023-02-21 16:27:56.531,Pyro4.threadpoolserver,DEBUG] connected ('127.0.0.1', 37564) - unencrypted
+[2023-02-21 16:27:56.531,Pyro4.threadpool,DEBUG] worker counts: 1 busy, 3 idle
+[2023-02-21 16:27:56.532,Pyro4.core,DEBUG] getting metadata for object crowdservice.warehouse
+[2023-02-21 16:27:56.532,Pyro4.core,DEBUG] connecting to PYRO:crowdservice.warehouse@localhost:23010
+[2023-02-21 16:27:56.532,Pyro4.core,DEBUG] from meta: methods=['acquire_control_velocities', 'acquire_destroy_list', 'acquire_local_intentions', 'acquire_new_bikes', 'acquire_new_cars', 'acquire_new_pedestrians', 'append_destroy_list', 'append_new_bikes', 'append_new_cars', 'append_new_pedestrians', 'extend_destroy_list', 'release_control_velocities', 'release_destroy_list', 'release_local_intentions', 'release_new_bikes', 'release_new_cars', 'release_new_pedestrians'], oneway methods=[], attributes=['control_velocities', 'destroy_list', 'forbidden_bounds', 'local_intentions', 'new_bikes', 'new_cars', 'new_pedestrians', 'simulation_bounds', 'spawn_bike', 'spawn_car', 'spawn_pedestrian']
+[2023-02-21 16:27:56.532,Pyro4.core,DEBUG] connected to PYRO:crowdservice.warehouse@localhost:23010 - IPv4 - unencrypted
+[2023-02-21 16:27:56.532,Pyro4.core,DEBUG] reusing existing metadata
+[2023-02-21 16:27:56.532,Pyro4.core,DEBUG] instancemode single: creating new pyro object for <class '__main__.CrowdService'>
+[2023-02-21 16:27:56.532,Pyro4.threadpoolserver,DEBUG] connected ('127.0.0.1', 37574) - unencrypted
+[2023-02-21 16:27:56.532,Pyro4.threadpool,DEBUG] worker counts: 2 busy, 2 idle
+[2023-02-21 16:27:56.533,Pyro4.threadpoolserver,DEBUG] connected ('127.0.0.1', 37580) - unencrypted
+[2023-02-21 16:27:56.533,Pyro4.threadpool,DEBUG] worker counts: 3 busy, 1 idle
+[2023-02-21 16:27:56.533,Pyro4.core,DEBUG] from meta: methods=['acquire_control_velocities', 'acquire_destroy_list', 'acquire_local_intentions', 'acquire_new_bikes', 'acquire_new_cars', 'acquire_new_pedestrians', 'append_destroy_list', 'append_new_bikes', 'append_new_cars', 'append_new_pedestrians', 'extend_destroy_list', 'release_control_velocities', 'release_destroy_list', 'release_local_intentions', 'release_new_bikes', 'release_new_cars', 'release_new_pedestrians'], oneway methods=[], attributes=['control_velocities', 'destroy_list', 'forbidden_bounds', 'local_intentions', 'new_bikes', 'new_cars', 'new_pedestrians', 'simulation_bounds', 'spawn_bike', 'spawn_car', 'spawn_pedestrian']
+[2023-02-21 16:27:56.533,Pyro4.core,DEBUG] connected to PYRO:crowdservice.warehouse@localhost:23010 - IPv4 - unencrypted
+[2023-02-21 16:27:56.533,Pyro4.core,DEBUG] reusing existing metadata
+[2023-02-21 16:27:56.533,Pyro4.core,DEBUG] from meta: methods=['acquire_control_velocities', 'acquire_destroy_list', 'acquire_local_intentions', 'acquire_new_bikes', 'acquire_new_cars', 'acquire_new_pedestrians', 'append_destroy_list', 'append_new_bikes', 'append_new_cars', 'append_new_pedestrians', 'extend_destroy_list', 'release_control_velocities', 'release_destroy_list', 'release_local_intentions', 'release_new_bikes', 'release_new_cars', 'release_new_pedestrians'], oneway methods=[], attributes=['control_velocities', 'destroy_list', 'forbidden_bounds', 'local_intentions', 'new_bikes', 'new_cars', 'new_pedestrians', 'simulation_bounds', 'spawn_bike', 'spawn_car', 'spawn_pedestrian']
+[2023-02-21 16:27:56.533,Pyro4.core,DEBUG] connected to PYRO:crowdservice.warehouse@localhost:23010 - IPv4 - unencrypted
+[2023-02-21 16:27:56.533,Pyro4.core,DEBUG] reusing existing metadata
+[2023-02-21 16:28:00.860,Pyro4.threadpoolserver,DEBUG] connected ('127.0.0.1', 37596) - unencrypted
+[2023-02-21 16:28:00.860,Pyro4.threadpool,DEBUG] worker counts: 4 busy, 0 idle
+[2023-02-21 16:59:26.702,Pyro4,INFO] Pyro log configured using built-in defaults, level=DEBUG
+[2023-02-21 16:59:26.714,Pyro4.core,DEBUG] exposing all members of <class 'Pyro4.core.DaemonObject'>
+[2023-02-21 16:59:27.387,Pyro4.core,DEBUG] exposing all members of <class '__main__.CrowdService'>
+[2023-02-21 16:59:27.397,Pyro4.threadpoolserver,INFO] starting thread pool socketserver
+[2023-02-21 16:59:27.397,Pyro4.threadpoolserver,INFO] not using SSL
+[2023-02-21 16:59:27.398,Pyro4.threadpool,DEBUG] worker pool created with initial size 4
+[2023-02-21 16:59:27.398,Pyro4.core,DEBUG] daemon created on localhost:23010 - IPv4 (pid 10022)
+[2023-02-21 16:59:27.398,Pyro4.core,DEBUG] accepted serializers: {'serpent', 'marshal', 'json'}
+[2023-02-21 16:59:27.398,Pyro4.core,DEBUG] pyro protocol version: 48  pickle version: 5
+[2023-02-21 16:59:27.398,Pyro4.core,INFO] daemon localhost:23010 entering requestloop
+[2023-02-21 16:59:27.398,Pyro4.threadpoolserver,DEBUG] threadpool server requestloop
+[2023-02-21 16:59:30.415,Pyro4.core,DEBUG] getting metadata for object crowdservice.warehouse
+[2023-02-21 16:59:30.415,Pyro4.core,DEBUG] connecting to PYRO:crowdservice.warehouse@localhost:23010
+[2023-02-21 16:59:30.415,Pyro4.core,DEBUG] getting metadata for object crowdservice.warehouse
+[2023-02-21 16:59:30.415,Pyro4.core,DEBUG] getting metadata for object crowdservice.warehouse
+[2023-02-21 16:59:30.415,Pyro4.core,DEBUG] connecting to PYRO:crowdservice.warehouse@localhost:23010
+[2023-02-21 16:59:30.416,Pyro4.core,DEBUG] connecting to PYRO:crowdservice.warehouse@localhost:23010
+[2023-02-21 16:59:30.417,Pyro4.threadpoolserver,DEBUG] connected ('127.0.0.1', 44038) - unencrypted
+[2023-02-21 16:59:30.417,Pyro4.threadpool,DEBUG] worker counts: 1 busy, 3 idle
+[2023-02-21 16:59:30.417,Pyro4.threadpoolserver,DEBUG] connected ('127.0.0.1', 44042) - unencrypted
+[2023-02-21 16:59:30.417,Pyro4.threadpool,DEBUG] worker counts: 2 busy, 2 idle
+[2023-02-21 16:59:30.417,Pyro4.threadpoolserver,DEBUG] connected ('127.0.0.1', 44044) - unencrypted
+[2023-02-21 16:59:30.417,Pyro4.threadpool,DEBUG] worker counts: 3 busy, 1 idle
+[2023-02-21 16:59:30.417,Pyro4.core,DEBUG] from meta: methods=['acquire_control_velocities', 'acquire_destroy_list', 'acquire_local_intentions', 'acquire_new_bikes', 'acquire_new_cars', 'acquire_new_pedestrians', 'append_destroy_list', 'append_new_bikes', 'append_new_cars', 'append_new_pedestrians', 'extend_destroy_list', 'release_control_velocities', 'release_destroy_list', 'release_local_intentions', 'release_new_bikes', 'release_new_cars', 'release_new_pedestrians'], oneway methods=[], attributes=['control_velocities', 'destroy_list', 'forbidden_bounds', 'local_intentions', 'new_bikes', 'new_cars', 'new_pedestrians', 'simulation_bounds', 'spawn_bike', 'spawn_car', 'spawn_pedestrian']
+[2023-02-21 16:59:30.417,Pyro4.core,DEBUG] connected to PYRO:crowdservice.warehouse@localhost:23010 - IPv4 - unencrypted
+[2023-02-21 16:59:30.418,Pyro4.core,DEBUG] reusing existing metadata
+[2023-02-21 16:59:30.418,Pyro4.core,DEBUG] from meta: methods=['acquire_control_velocities', 'acquire_destroy_list', 'acquire_local_intentions', 'acquire_new_bikes', 'acquire_new_cars', 'acquire_new_pedestrians', 'append_destroy_list', 'append_new_bikes', 'append_new_cars', 'append_new_pedestrians', 'extend_destroy_list', 'release_control_velocities', 'release_destroy_list', 'release_local_intentions', 'release_new_bikes', 'release_new_cars', 'release_new_pedestrians'], oneway methods=[], attributes=['control_velocities', 'destroy_list', 'forbidden_bounds', 'local_intentions', 'new_bikes', 'new_cars', 'new_pedestrians', 'simulation_bounds', 'spawn_bike', 'spawn_car', 'spawn_pedestrian']
+[2023-02-21 16:59:30.418,Pyro4.core,DEBUG] connected to PYRO:crowdservice.warehouse@localhost:23010 - IPv4 - unencrypted
+[2023-02-21 16:59:30.418,Pyro4.core,DEBUG] reusing existing metadata
+[2023-02-21 16:59:30.418,Pyro4.core,DEBUG] from meta: methods=['acquire_control_velocities', 'acquire_destroy_list', 'acquire_local_intentions', 'acquire_new_bikes', 'acquire_new_cars', 'acquire_new_pedestrians', 'append_destroy_list', 'append_new_bikes', 'append_new_cars', 'append_new_pedestrians', 'extend_destroy_list', 'release_control_velocities', 'release_destroy_list', 'release_local_intentions', 'release_new_bikes', 'release_new_cars', 'release_new_pedestrians'], oneway methods=[], attributes=['control_velocities', 'destroy_list', 'forbidden_bounds', 'local_intentions', 'new_bikes', 'new_cars', 'new_pedestrians', 'simulation_bounds', 'spawn_bike', 'spawn_car', 'spawn_pedestrian']
+[2023-02-21 16:59:30.418,Pyro4.core,DEBUG] connected to PYRO:crowdservice.warehouse@localhost:23010 - IPv4 - unencrypted
+[2023-02-21 16:59:30.418,Pyro4.core,DEBUG] reusing existing metadata
+[2023-02-21 16:59:30.418,Pyro4.core,DEBUG] instancemode single: creating new pyro object for <class '__main__.CrowdService'>
+[2023-02-21 16:59:34.689,Pyro4.threadpoolserver,DEBUG] connected ('127.0.0.1', 44060) - unencrypted
+[2023-02-21 16:59:34.689,Pyro4.threadpool,DEBUG] worker counts: 4 busy, 0 idle
+[2023-02-22 21:41:30.735,Pyro4,INFO] Pyro log configured using built-in defaults, level=DEBUG
+[2023-02-22 21:41:30.749,Pyro4.core,DEBUG] exposing all members of <class 'Pyro4.core.DaemonObject'>
+[2023-02-22 21:41:31.383,Pyro4.core,DEBUG] exposing all members of <class '__main__.CrowdService'>
+[2023-02-22 21:41:31.390,Pyro4.threadpoolserver,INFO] starting thread pool socketserver
+[2023-02-22 21:41:31.390,Pyro4.threadpoolserver,INFO] not using SSL
+[2023-02-22 21:41:31.392,Pyro4.threadpool,DEBUG] worker pool created with initial size 4
+[2023-02-22 21:41:31.392,Pyro4.core,DEBUG] daemon created on localhost:23010 - IPv4 (pid 41922)
+[2023-02-22 21:41:31.392,Pyro4.core,DEBUG] accepted serializers: {'json', 'serpent', 'marshal'}
+[2023-02-22 21:41:31.392,Pyro4.core,DEBUG] pyro protocol version: 48  pickle version: 5
+[2023-02-22 21:41:31.392,Pyro4.core,INFO] daemon localhost:23010 entering requestloop
+[2023-02-22 21:41:31.392,Pyro4.threadpoolserver,DEBUG] threadpool server requestloop
+[2023-02-22 21:41:34.399,Pyro4.core,DEBUG] getting metadata for object crowdservice.warehouse
+[2023-02-22 21:41:34.400,Pyro4.core,DEBUG] connecting to PYRO:crowdservice.warehouse@localhost:23010
+[2023-02-22 21:41:34.399,Pyro4.core,DEBUG] getting metadata for object crowdservice.warehouse
+[2023-02-22 21:41:34.400,Pyro4.core,DEBUG] connecting to PYRO:crowdservice.warehouse@localhost:23010
+[2023-02-22 21:41:34.400,Pyro4.core,DEBUG] getting metadata for object crowdservice.warehouse
+[2023-02-22 21:41:34.400,Pyro4.core,DEBUG] connecting to PYRO:crowdservice.warehouse@localhost:23010
+[2023-02-22 21:41:34.401,Pyro4.threadpoolserver,DEBUG] connected ('127.0.0.1', 53738) - unencrypted
+[2023-02-22 21:41:34.401,Pyro4.threadpool,DEBUG] worker counts: 1 busy, 3 idle
+[2023-02-22 21:41:34.401,Pyro4.threadpoolserver,DEBUG] connected ('127.0.0.1', 53756) - unencrypted
+[2023-02-22 21:41:34.401,Pyro4.threadpool,DEBUG] worker counts: 2 busy, 2 idle
+[2023-02-22 21:41:34.401,Pyro4.threadpoolserver,DEBUG] connected ('127.0.0.1', 53754) - unencrypted
+[2023-02-22 21:41:34.401,Pyro4.threadpool,DEBUG] worker counts: 3 busy, 1 idle
+[2023-02-22 21:41:34.402,Pyro4.core,DEBUG] from meta: methods=['acquire_control_velocities', 'acquire_destroy_list', 'acquire_local_intentions', 'acquire_new_bikes', 'acquire_new_cars', 'acquire_new_pedestrians', 'append_destroy_list', 'append_new_bikes', 'append_new_cars', 'append_new_pedestrians', 'extend_destroy_list', 'release_control_velocities', 'release_destroy_list', 'release_local_intentions', 'release_new_bikes', 'release_new_cars', 'release_new_pedestrians'], oneway methods=[], attributes=['control_velocities', 'destroy_list', 'forbidden_bounds', 'local_intentions', 'new_bikes', 'new_cars', 'new_pedestrians', 'simulation_bounds', 'spawn_bike', 'spawn_car', 'spawn_pedestrian']
+[2023-02-22 21:41:34.402,Pyro4.core,DEBUG] connected to PYRO:crowdservice.warehouse@localhost:23010 - IPv4 - unencrypted
+[2023-02-22 21:41:34.402,Pyro4.core,DEBUG] reusing existing metadata
+[2023-02-22 21:41:34.402,Pyro4.core,DEBUG] instancemode single: creating new pyro object for <class '__main__.CrowdService'>
+[2023-02-22 21:41:34.402,Pyro4.core,DEBUG] from meta: methods=['acquire_control_velocities', 'acquire_destroy_list', 'acquire_local_intentions', 'acquire_new_bikes', 'acquire_new_cars', 'acquire_new_pedestrians', 'append_destroy_list', 'append_new_bikes', 'append_new_cars', 'append_new_pedestrians', 'extend_destroy_list', 'release_control_velocities', 'release_destroy_list', 'release_local_intentions', 'release_new_bikes', 'release_new_cars', 'release_new_pedestrians'], oneway methods=[], attributes=['control_velocities', 'destroy_list', 'forbidden_bounds', 'local_intentions', 'new_bikes', 'new_cars', 'new_pedestrians', 'simulation_bounds', 'spawn_bike', 'spawn_car', 'spawn_pedestrian']
+[2023-02-22 21:41:34.402,Pyro4.core,DEBUG] connected to PYRO:crowdservice.warehouse@localhost:23010 - IPv4 - unencrypted
+[2023-02-22 21:41:34.402,Pyro4.core,DEBUG] reusing existing metadata
+[2023-02-22 21:41:34.402,Pyro4.core,DEBUG] from meta: methods=['acquire_control_velocities', 'acquire_destroy_list', 'acquire_local_intentions', 'acquire_new_bikes', 'acquire_new_cars', 'acquire_new_pedestrians', 'append_destroy_list', 'append_new_bikes', 'append_new_cars', 'append_new_pedestrians', 'extend_destroy_list', 'release_control_velocities', 'release_destroy_list', 'release_local_intentions', 'release_new_bikes', 'release_new_cars', 'release_new_pedestrians'], oneway methods=[], attributes=['control_velocities', 'destroy_list', 'forbidden_bounds', 'local_intentions', 'new_bikes', 'new_cars', 'new_pedestrians', 'simulation_bounds', 'spawn_bike', 'spawn_car', 'spawn_pedestrian']
+[2023-02-22 21:41:34.402,Pyro4.core,DEBUG] connected to PYRO:crowdservice.warehouse@localhost:23010 - IPv4 - unencrypted
+[2023-02-22 21:41:34.402,Pyro4.core,DEBUG] reusing existing metadata
+[2023-02-22 21:41:38.720,Pyro4.threadpoolserver,DEBUG] connected ('127.0.0.1', 33178) - unencrypted
+[2023-02-22 21:41:38.720,Pyro4.threadpool,DEBUG] worker counts: 4 busy, 0 idle
+[2023-02-22 21:43:21.042,Pyro4.threadpoolserver,DEBUG] disconnected ('127.0.0.1', 33178)
+[2023-02-22 21:43:21.042,Pyro4.threadpool,DEBUG] worker counts: 3 busy, 1 idle
+[2023-02-22 21:43:29.170,Pyro4.threadpoolserver,DEBUG] disconnected ('127.0.0.1', 53754)
+[2023-02-22 21:43:29.170,Pyro4.core,DEBUG] connection released
+[2023-02-22 21:43:29.170,Pyro4.threadpool,DEBUG] worker counts: 2 busy, 2 idle
+[2023-02-22 21:55:04.614,Pyro4,INFO] Pyro log configured using built-in defaults, level=DEBUG
+[2023-02-22 21:55:04.626,Pyro4.core,DEBUG] exposing all members of <class 'Pyro4.core.DaemonObject'>
+[2023-02-22 21:55:05.257,Pyro4.core,DEBUG] exposing all members of <class '__main__.CrowdService'>
+[2023-02-22 21:55:05.264,Pyro4.threadpoolserver,INFO] starting thread pool socketserver
+[2023-02-22 21:55:05.264,Pyro4.threadpoolserver,INFO] not using SSL
+[2023-02-22 21:55:05.266,Pyro4.threadpool,DEBUG] worker pool created with initial size 4
+[2023-02-22 21:55:05.266,Pyro4.core,DEBUG] daemon created on localhost:23010 - IPv4 (pid 5024)
+[2023-02-22 21:55:05.266,Pyro4.core,DEBUG] accepted serializers: {'serpent', 'marshal', 'json'}
+[2023-02-22 21:55:05.266,Pyro4.core,DEBUG] pyro protocol version: 48  pickle version: 5
+[2023-02-22 21:55:05.266,Pyro4.core,INFO] daemon localhost:23010 entering requestloop
+[2023-02-22 21:55:05.266,Pyro4.threadpoolserver,DEBUG] threadpool server requestloop
+[2023-02-22 21:55:08.275,Pyro4.core,DEBUG] getting metadata for object crowdservice.warehouse
+[2023-02-22 21:55:08.275,Pyro4.core,DEBUG] getting metadata for object crowdservice.warehouse
+[2023-02-22 21:55:08.275,Pyro4.core,DEBUG] connecting to PYRO:crowdservice.warehouse@localhost:23010
+[2023-02-22 21:55:08.275,Pyro4.core,DEBUG] connecting to PYRO:crowdservice.warehouse@localhost:23010
+[2023-02-22 21:55:08.275,Pyro4.core,DEBUG] getting metadata for object crowdservice.warehouse
+[2023-02-22 21:55:08.275,Pyro4.core,DEBUG] connecting to PYRO:crowdservice.warehouse@localhost:23010
+[2023-02-22 21:55:08.276,Pyro4.threadpoolserver,DEBUG] connected ('127.0.0.1', 42554) - unencrypted
+[2023-02-22 21:55:08.276,Pyro4.threadpool,DEBUG] worker counts: 1 busy, 3 idle
+[2023-02-22 21:55:08.276,Pyro4.threadpoolserver,DEBUG] connected ('127.0.0.1', 42552) - unencrypted
+[2023-02-22 21:55:08.277,Pyro4.threadpool,DEBUG] worker counts: 2 busy, 2 idle
+[2023-02-22 21:55:08.277,Pyro4.threadpoolserver,DEBUG] connected ('127.0.0.1', 42556) - unencrypted
+[2023-02-22 21:55:08.277,Pyro4.threadpool,DEBUG] worker counts: 3 busy, 1 idle
+[2023-02-22 21:55:08.277,Pyro4.core,DEBUG] from meta: methods=['acquire_control_velocities', 'acquire_destroy_list', 'acquire_local_intentions', 'acquire_new_bikes', 'acquire_new_cars', 'acquire_new_pedestrians', 'append_destroy_list', 'append_new_bikes', 'append_new_cars', 'append_new_pedestrians', 'extend_destroy_list', 'release_control_velocities', 'release_destroy_list', 'release_local_intentions', 'release_new_bikes', 'release_new_cars', 'release_new_pedestrians'], oneway methods=[], attributes=['control_velocities', 'destroy_list', 'forbidden_bounds', 'local_intentions', 'new_bikes', 'new_cars', 'new_pedestrians', 'simulation_bounds', 'spawn_bike', 'spawn_car', 'spawn_pedestrian']
+[2023-02-22 21:55:08.277,Pyro4.core,DEBUG] connected to PYRO:crowdservice.warehouse@localhost:23010 - IPv4 - unencrypted
+[2023-02-22 21:55:08.277,Pyro4.core,DEBUG] reusing existing metadata
+[2023-02-22 21:55:08.277,Pyro4.core,DEBUG] from meta: methods=['acquire_control_velocities', 'acquire_destroy_list', 'acquire_local_intentions', 'acquire_new_bikes', 'acquire_new_cars', 'acquire_new_pedestrians', 'append_destroy_list', 'append_new_bikes', 'append_new_cars', 'append_new_pedestrians', 'extend_destroy_list', 'release_control_velocities', 'release_destroy_list', 'release_local_intentions', 'release_new_bikes', 'release_new_cars', 'release_new_pedestrians'], oneway methods=[], attributes=['control_velocities', 'destroy_list', 'forbidden_bounds', 'local_intentions', 'new_bikes', 'new_cars', 'new_pedestrians', 'simulation_bounds', 'spawn_bike', 'spawn_car', 'spawn_pedestrian']
+[2023-02-22 21:55:08.277,Pyro4.core,DEBUG] instancemode single: creating new pyro object for <class '__main__.CrowdService'>
+[2023-02-22 21:55:08.277,Pyro4.core,DEBUG] connected to PYRO:crowdservice.warehouse@localhost:23010 - IPv4 - unencrypted
+[2023-02-22 21:55:08.277,Pyro4.core,DEBUG] reusing existing metadata
+[2023-02-22 21:55:08.277,Pyro4.core,DEBUG] from meta: methods=['acquire_control_velocities', 'acquire_destroy_list', 'acquire_local_intentions', 'acquire_new_bikes', 'acquire_new_cars', 'acquire_new_pedestrians', 'append_destroy_list', 'append_new_bikes', 'append_new_cars', 'append_new_pedestrians', 'extend_destroy_list', 'release_control_velocities', 'release_destroy_list', 'release_local_intentions', 'release_new_bikes', 'release_new_cars', 'release_new_pedestrians'], oneway methods=[], attributes=['control_velocities', 'destroy_list', 'forbidden_bounds', 'local_intentions', 'new_bikes', 'new_cars', 'new_pedestrians', 'simulation_bounds', 'spawn_bike', 'spawn_car', 'spawn_pedestrian']
+[2023-02-22 21:55:08.277,Pyro4.core,DEBUG] connected to PYRO:crowdservice.warehouse@localhost:23010 - IPv4 - unencrypted
+[2023-02-22 21:55:08.277,Pyro4.core,DEBUG] reusing existing metadata
+[2023-02-22 21:55:12.596,Pyro4.threadpoolserver,DEBUG] connected ('127.0.0.1', 42590) - unencrypted
+[2023-02-22 21:55:12.596,Pyro4.threadpool,DEBUG] worker counts: 4 busy, 0 idle
+[2023-02-22 21:55:25.478,Pyro4.threadpoolserver,DEBUG] disconnected ('127.0.0.1', 42590)
+[2023-02-22 21:55:25.478,Pyro4.threadpool,DEBUG] worker counts: 3 busy, 1 idle
+[2023-02-22 21:55:33.961,Pyro4.threadpoolserver,DEBUG] disconnected ('127.0.0.1', 42556)
+[2023-02-22 21:55:33.961,Pyro4.core,DEBUG] connection released
+[2023-02-22 21:55:33.961,Pyro4.threadpool,DEBUG] worker counts: 2 busy, 2 idle

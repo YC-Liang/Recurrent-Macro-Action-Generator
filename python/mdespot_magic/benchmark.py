@@ -24,7 +24,7 @@ sys.path.append('{}/../'.format(os.path.dirname(os.path.realpath(__file__))))
 
 from environment import Environment, Response
 from models import MAGICGenNet, MAGICCriticNet, MAGICGenNet_DriveHard, MAGICCriticNet_DriveHard
-from models import MAGICGen_Autoencoder, MAGICGen_Encode_RNN, MAGICGen_RNN
+from models import MAGICGen_Autoencoder, MAGICGen_RNN, MAGICGenNet_DriveHard_RNN, MAGICGenNet_DriveHard_Encoder, MAGICGen_Encoder
 from utils import Statistics, PARTICLE_SIZES, CONTEXT_SIZES
 
 import multiprocessing
@@ -44,7 +44,7 @@ GAMMA = 0.98
 BELIEF_DEPENDENT = args.belief_dependent
 CONTEXT_DEPENDENT = args.context_dependent
 GEN_MODEL = args.gen_model_name
-GEN_MODELS = ['Vanilla', 'Autoencoder', 'RNN', 'RNN-Autoencoder']
+GEN_MODELS = ['Vanilla', 'Autoencoder', 'RNN', 'Encoder']
 
 if GEN_MODEL not in GEN_MODELS:
     raise Exception("Invalid generative model type")
@@ -124,14 +124,19 @@ if __name__ == '__main__':
 
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     if TASK in ['DriveHard']:
-        gen_model = MAGICGenNet_DriveHard(MACRO_LENGTH, CONTEXT_DEPENDENT, BELIEF_DEPENDENT).to(device).float()
+        if GEN_MODEL == 'RNN':
+            gen_model = MAGICGenNet_DriveHard_RNN(MACRO_LENGTH, CONTEXT_DEPENDENT, BELIEF_DEPENDENT).to(device).float()
+        elif GEN_MODEL == "Encoder":
+            gen_model = MAGICGenNet_DriveHard_Encoder(MACRO_LENGTH, CONTEXT_DEPENDENT, BELIEF_DEPENDENT).to(device).float()
+        else:
+            gen_model = MAGICGenNet_DriveHard(MACRO_LENGTH, CONTEXT_DEPENDENT, BELIEF_DEPENDENT).to(device).float()
     else:
         if GEN_MODEL == 'Vanilla':
             gen_model = MAGICGenNet(CONTEXT_SIZE, PARTICLE_SIZE, CONTEXT_DEPENDENT, BELIEF_DEPENDENT).float().to(device)
         elif GEN_MODEL == 'Autoencoder':
             gen_model = MAGICGen_Autoencoder(CONTEXT_SIZE, PARTICLE_SIZE, CONTEXT_DEPENDENT, BELIEF_DEPENDENT).float().to(device)
-        elif GEN_MODEL == 'RNN-Autoencoder':
-            gen_model = MAGICGen_Encode_RNN(CONTEXT_SIZE, PARTICLE_SIZE, CONTEXT_DEPENDENT, BELIEF_DEPENDENT).float().to(device)
+        elif GEN_MODEL == 'Encoder':
+            gen_model = MAGICGen_Encoder(CONTEXT_SIZE, PARTICLE_SIZE, CONTEXT_DEPENDENT, BELIEF_DEPENDENT).float().to(device)
         elif GEN_MODEL == 'RNN':
             gen_model = MAGICGen_RNN(CONTEXT_SIZE, PARTICLE_SIZE, CONTEXT_DEPENDENT, BELIEF_DEPENDENT).float().to(device)
         else:
@@ -202,7 +207,7 @@ if __name__ == '__main__':
                 context = instruction_data[0]
                 state = instruction_data[1]
                 with torch.no_grad():
-                    if GEN_MODEL not in ['RNN-Autoencoder', 'RNN']:
+                    if GEN_MODEL not in ['RNN']:
                         macro_actions = gen_model.mode(
                                 torch.tensor(instruction_data[0], dtype=torch.float, device=device).unsqueeze(0),
                                 torch.tensor(instruction_data[1], dtype=torch.float, device=device).unsqueeze(0))

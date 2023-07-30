@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 if (CMAKE_COMPILER_IS_GNUCC AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 7.0)
     message(FATAL_ERROR "Require at least gcc-7.0")
 endif()
-SET(CMAKE_CXX_FLAGS "-fPIC -O3 -msse2 -mfpmath=sse -Wfatal-errors -Werror -Wall -Wextra -Wdeprecated -Wno-shadow -Wuninitialized -Wunreachable-code -Wold-style-cast -Wconversion -Wsign-conversion -Wno-unused-parameter -Wno-type-limits -Wunused-function -Wno-stringop-overflow -Wno-maybe-uninitialized -Wdouble-promotion")
+SET(CMAKE_CXX_FLAGS "-fPIC -O3 -msse2 -mfpmath=sse -Wfatal-errors -Wall -Wextra -Wdeprecated -Wno-shadow -Wuninitialized -Wunreachable-code -Wold-style-cast -Wconversion -Wsign-conversion -Wno-unused-parameter -Wno-type-limits -Wunused-function -Wno-stringop-overflow -Wno-maybe-uninitialized -Wdouble-promotion")
 
 if(NOT CMAKE_BUILD_TYPE)
   SET(CMAKE_BUILD_TYPE Release)
@@ -55,6 +55,7 @@ foreach(TASK
     LightDark
     PuckPush
     VdpTag
+    Navigation2D
     )
   message("  PomcpowEnv${TASK}")
   add_executable("PomcpowEnv${TASK}" src/experiments/PomcpowEnv.cpp)
@@ -72,6 +73,7 @@ message("Adding DESPOT (Handcrafted) environments:")
 foreach(TASK
     LightDark
     PuckPush
+    Navigation2D
     )
   message("  DespotHandcraftedEnv${TASK}")
   add_executable("DespotHandcraftedEnv${TASK}" src/experiments/DespotHandcraftedEnv.cpp)
@@ -91,6 +93,7 @@ foreach(TASK
     LightDark
     PuckPush
     Navigation2D
+    PuckPushHard
     )
   message("  DespotMagicEnv${TASK}")
   add_executable("DespotMagicEnv${TASK}" src/experiments/DespotMagicEnv.cpp)
@@ -107,6 +110,8 @@ message("Adding environment tests:")
 foreach(TASK
     LightDark
     Navigation2D
+    PuckPush
+    PuckPushHard
     )
   message("  TaskTest${TASK}")
   add_executable("TaskTest${TASK}" src/experiments/TaskTest.cpp)

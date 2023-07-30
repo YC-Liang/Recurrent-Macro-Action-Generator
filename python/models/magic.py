@@ -19,7 +19,7 @@ def LeakyReLUTop(x, x_max=1, hard_slope=1e-2):
 
 class MAGICGenNet(nn.Module):
     def __init__(self, context_size, particle_size, context_dependent, belief_dependent):
-
+        print("Loading the vanilla model...")
         super(MAGICGenNet, self).__init__()
         self.context_size = context_size
         self.particle_size = particle_size
@@ -48,9 +48,11 @@ class MAGICGenNet(nn.Module):
         else:
             self.mean = nn.Parameter(torch.normal(torch.zeros(NUM_CURVES * (2 * MACRO_CURVE_ORDER)), 1), requires_grad=True)
             self.concentration = nn.Parameter(100 * torch.ones(NUM_CURVES), requires_grad=True)
+        print("finished loading the model...")
 
     def forward(self, c, x):
-
+        print(c.shape)
+        print(x.shape)
         x = x.reshape((x.shape[0], -1, self.particle_size))
 
         if self.context_dependent or self.belief_dependent:
@@ -93,6 +95,8 @@ class MAGICGenNet(nn.Module):
             return (PowerSpherical(mean, concentration),)
 
     def rsample(self, c, x):
+        #if(c.size()[1] != 52):
+        #    print(c)
         (macro_actions_dist,) = self.forward(c, x)
         macro_actions = macro_actions_dist.rsample()
         macro_actions = macro_actions.view((-1, NUM_CURVES * 2 * MACRO_CURVE_ORDER))
@@ -161,6 +165,7 @@ class MAGICGenNet_DriveHard(nn.Module):
     def __init__(self, macro_length, context_dependent, belief_dependent):
 
         super(MAGICGenNet_DriveHard, self).__init__()
+        print("Loading the vanilla model, drive hard...")
         self.context_size = 300
         self.num_exo_agents = 15
         self.ego_size = 6 + 4 + 1

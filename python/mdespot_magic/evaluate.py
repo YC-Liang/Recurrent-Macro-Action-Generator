@@ -16,7 +16,7 @@ import sys
 sys.path.append('{}/../'.format(os.path.dirname(os.path.realpath(__file__))))
 from environment import Environment, Response
 from models import MAGICGenNet, MAGICCriticNet, MAGICGenNet_DriveHard, MAGICCriticNet_DriveHard
-from models import MAGICGen_Autoencoder, MAGICGen_Encode_RNN, MAGICGen_RNN
+from models import MAGICGen_Autoencoder, MAGICGen_RNN, MAGICGen_Encoder
 from utils import Statistics, PARTICLE_SIZES, CONTEXT_SIZES
 
 import torch
@@ -39,21 +39,23 @@ if __name__ == '__main__':
     print('Loading model... ({})'.format(model_path))
     with torch.no_grad():
         device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        print(f"using device... {device}")
         if TASK in ['DriveHard']:
             gen_model = MAGICGenNet_DriveHard(MACRO_LENGTH, CONTEXT_DEPENDENT, BELIEF_DEPENDENT).to(device).float()
         else:
-            if GEN_MODEL == 'RNN-Autoencoder':
-                gen_model = MAGICGen_Encode_RNN(CONTEXT_SIZE, PARTICLE_SIZE, CONTEXT_DEPENDENT, BELIEF_DEPENDENT).to(device).float()
-            elif GEN_MODEL == 'Vanilla':
+            if GEN_MODEL == 'Vanilla':
                 gen_model = MAGICGenNet(CONTEXT_SIZE, PARTICLE_SIZE, CONTEXT_DEPENDENT, BELIEF_DEPENDENT).to(device).float()
-            elif GEN_MODEL == 'Autoencoder':
-                gen_model = MAGICGen_Autoencoder(CONTEXT_SIZE, PARTICLE_SIZE, CONTEXT_DEPENDENT, BELIEF_DEPENDENT).to(device).float()
+            elif GEN_MODEL == 'Encoder':
+                gen_model = MAGICGen_Encoder(CONTEXT_SIZE, PARTICLE_SIZE, CONTEXT_DEPENDENT, BELIEF_DEPENDENT).to(device).float()
             elif GEN_MODEL == 'RNN':
                 gen_model = MAGICGen_RNN(CONTEXT_SIZE, PARTICLE_SIZE, CONTEXT_DEPENDENT, BELIEF_DEPENDENT).to(device).float()
+        print(f"model path: {model_path}")
         if model_path is not None:
+            print("loading the checkpoint...")
             gen_model.load_state_dict(torch.load(model_path))
         gen_model.eval()
 
+        print("Initialise environemnt...")
         env = Environment(TASK, MACRO_LENGTH, True)
         hidden_state = torch.tensor([], device=device)
         cell_state = torch.tensor([], device=device)
@@ -61,12 +63,12 @@ if __name__ == '__main__':
         while True:
 
             context = env.read_context()
-            print(context)
+            #print(context)
             #context = cv2.imdecode(context, cv2.IMREAD_UNCHANGED)[...,0:2]
 
             state = env.read_state()
             if state is not None:
-                if GEN_MODEL in ['RNN-Autoencoder', 'RNN']:
+                if GEN_MODEL in ['RNN']:
                     (macro_actions), hidden_state, cell_state = gen_model.mode(
                             torch.tensor(context, dtype=torch.float, device=device).unsqueeze(0),
                             torch.tensor(state, dtype=torch.float, device=device).unsqueeze(0),

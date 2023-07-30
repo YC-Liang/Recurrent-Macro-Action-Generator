@@ -6,12 +6,16 @@ import torch.nn as nn
 import torch.nn.functional as F
 import numpy as np
 from power_spherical import PowerSpherical
+from einops.layers.torch import Rearrange
+from einops import rearrange, repeat
 
 MACRO_CURVE_ORDER = 3
 NUM_CURVES = 8
 EPS = 0.01
 VOCABULARY_SIZE = 361 #discretise angles into 1 degree each. The first represents the <EOS> token
 MAX_ACTION_LEN= 24
+
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 def LeakyHardTanh(x, x_min=-1, x_max=1, hard_slope=1e-2):
     return (x >= x_min) * (x <= x_max) * x + (x < x_min) * (x_min + hard_slope * (x - x_min)) + (x > x_max) * (x_max + hard_slope * (x - x_max))
@@ -153,3 +157,169 @@ class MAGICCriticNet_VLMAG(nn.Module):
         x = self.fc10(x)
 
         return (x[...,0], EPS + F.softplus(x[...,1]))
+
+
+
+
+# Transformer code below
+def pair(t):
+    return t if isinstance(t, tuple) else (t, t)
+
+class PreNorm(nn.Module):
+    def __init__(self, dim, fn):
+        super().__init__()
+        self.norm = nn.LayerNorm(dim)
+        self.fn = fn
+    def forward(self, x, **kwargs):
+        return self.fn(self.norm(x), **kwargs)
+
+class FeedForward(nn.Module):
+    def __init__(self, dim, hidden_dim, dropout = 0.):
+        super().__init__()
+        self.net = nn.Sequential(
+            nn.Linear(dim, hidden_dim),
+            nn.GELU(),
+            nn.Dropout(dropout),
+            nn.Linear(hidden_dim, dim),
+            nn.Dropout(dropout)
+        )
+    def forward(self, x):
+        return self.net(x)
+
+class Attention(nn.Module):
+    def __init__(self, dim, heads = 8, dim_head = 64, dropout = 0.):
+        super().__init__()
+        inner_dim = dim_head *  heads
+        project_out = not (heads == 1 and dim_head == dim)
+
+        self.heads = heads
+        self.scale = dim_head ** -0.5
+
+        self.attend = nn.Softmax(dim = -1)
+        self.dropout = nn.Dropout(dropout)
+
+        self.to_qkv = nn.Linear(dim, inner_dim * 3, bias = False)
+
+        self.to_out = nn.Sequential(
+            nn.Linear(inner_dim, dim),
+            nn.Dropout(dropout)
+        ) if project_out else nn.Identity()
+
+    def forward(self, x):
+        qkv = self.to_qkv(x).chunk(3, dim = -1)
+        q, k, v = map(lambda t: rearrange(t, 'b n (h d) -> b h n d', h = self.heads), qkv)
+
+        dots = torch.matmul(q, k.transpose(-1, -2)) * self.scale
+
+        attn = self.attend(dots)
+        attn = self.dropout(attn)
+
+        out = torch.matmul(attn, v)
+        out = rearrange(out, 'b h n d -> b n (h d)')
+        return self.to_out(out)
+
+class Transformer(nn.Module):
+    def __init__(self, dim, depth, heads, dim_head, mlp_dim, dropout = 0.):
+        super().__init__()
+        self.layers = nn.ModuleList([])
+        for _ in range(depth):
+            self.layers.append(nn.ModuleList([
+                PreNorm(dim, Attention(dim, heads = heads, dim_head = dim_head, dropout = dropout)),
+                PreNorm(dim, FeedForward(dim, mlp_dim, dropout = dropout))
+            ]))
+    def forward(self, x):
+        for attn, ff in self.layers:
+            x = attn(x) + x
+            x = ff(x) + x
+        return x
+
+class MagicGen_Transformer(nn.Module):
+    def __init__(self, sequence_len, context_size, particle_size, dim, depth, heads, mlp_dim, pool = 'cls', dim_head = 64, dropout = 0., emb_dropout = 0.):
+        '''
+        Inputs are passed as individual trajectories. An trajectory contains past state particles and contexts.
+        A pre-processing channel is used to process each particle in each time step, then these partciles from 
+        an array that is then concatenated with the context. These arrays are then passed to a transformer to 
+        generate macro actions.
+        '''
+        super().__init__()
+        self.context_size = context_size
+        self.particle_size = particle_size
+        self.sequence_len = sequence_len
+        dim += self.context_size
+
+        self.fc1 = nn.Linear(particle_size, 256)
+        self.fc2 = nn.Linear(256, 256)
+
+        self.pos_embedding = nn.Parameter(torch.randn(1, self.sequence_len+1, dim))
+        self.cls_token = nn.Parameter(torch.randn(1, 1, dim))
+        self.dropout = nn.Dropout(emb_dropout)
+
+        self.transformer = Transformer(dim, depth, heads, dim_head, mlp_dim, dropout)
+
+        self.pool = pool
+        self.to_latent = nn.Identity()
+
+        self.mlp_mean = nn.Sequential(
+            nn.LayerNorm(dim),
+            nn.Linear(dim, NUM_CURVES * 2 * MACRO_CURVE_ORDER)
+        )
+
+        self.mlp_concentration = nn.Sequential(
+            nn.LayerNorm(dim),
+            nn.Linear(dim, NUM_CURVES)
+        )
+
+    def forward(self, c, x):
+        x = x.reshape((x.shape[0], x.shape[1], -1, self.particle_size)) #256 4 100 3
+        B, H, W, P = x.shape #Batch size, sequence len, number of particles, particle size 
+        assert H == self.sequence_len, f"Invalid sequence length, expected {self.sequence_len}, got {H}"
+        assert P == self.particle_size, f"Invalid particle size, expected {self.particle_size}, got {P}"
+        assert c.shape[1] == self.context_size, f"Invalid context size, expected {self.context_size}, got {c.shape[1]}"
+
+        sequence = torch.tensor([]).float().to(device)
+        for i in range(H):
+            hist = x[:, i, :, :]
+            hist = F.relu(self.fc1(hist))
+            hist = F.relu(self.fc2(hist))
+            hist = hist.mean(dim=-2)
+            hist = torch.cat((hist, c), dim=-1)
+            hist = hist.unsqueeze(1)
+            if len(sequence) == 0:
+                sequence = hist
+            else:
+                sequence = torch.cat((sequence, hist), 1)
+            #sequence = torch.cat((sequence, hist), 1) #Batch size x Sequence length x Number of preprocessed particles
+
+        b, n, _ = sequence.shape
+
+        cls_tokens = repeat(self.cls_token, '1 1 d -> b 1 d', b = b)
+        sequence = torch.cat((cls_tokens, sequence), dim=1)
+        sequence += self.pos_embedding[:, :(n + 1)]
+        sequence = self.dropout(sequence)
+
+        x = self.transformer(sequence)
+        x = x.mean(dim = 1) if self.pool == 'mean' else x[:, 0]
+
+        mean = self.mlp_mean(x)
+        mean = mean.view((-1, NUM_CURVES, 2 * MACRO_CURVE_ORDER))
+        mean = mean / (mean**2).sum(dim=-1, keepdim=True).sqrt()
+        concentration = 1 + F.softplus(self.mlp_concentration(x))
+        
+        return (PowerSpherical(mean, concentration),)
+
+    def rsample(self, c, x):
+        (macro_actions_dist,) = self.forward(c, x)
+        macro_actions = macro_actions_dist.rsample()
+        macro_actions = macro_actions.view((-1, NUM_CURVES * 2 * MACRO_CURVE_ORDER))
+        macro_actions_entropy = macro_actions_dist.entropy()
+
+        return (macro_actions, macro_actions_entropy)
+
+    def mode(self, c, x):
+        (macro_actions_dist,) = self.forward(c, x)
+        macro_actions = macro_actions_dist.loc.view((-1, NUM_CURVES * 2 * MACRO_CURVE_ORDER))
+
+        return macro_actions
+
+            
+

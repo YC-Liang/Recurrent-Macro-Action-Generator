@@ -32,11 +32,14 @@ sys.path.append('{}/../'.format(os.path.dirname(os.path.realpath(__file__))))
 from models import MAGICGenNet_DriveHard, MAGICCriticNet_DriveHard, RLActorNet_DriveHard
 from utils import Statistics, PARTICLE_SIZES, CONTEXT_SIZES
 import random
+#print("")
+#sys.path.append(glob.glob(os.path.expanduser('~/summit/PythonAPI/carla/dist/carla-*%d.%d-%s.egg' % (
+#    sys.version_info.major,
+#    sys.version_info.minor,
+#    'win-amd64' if os.name == 'nt' else 'linux-x86_64')))[0])
 
-sys.path.append(glob.glob(os.path.expanduser('~/summit/PythonAPI/carla/dist/carla-*%d.%d-%s.egg' % (
-    sys.version_info.major,
-    sys.version_info.minor,
-    'win-amd64' if os.name == 'nt' else 'linux-x86_64')))[0])
+sys.path.append(glob.glob(os.path.expanduser('~/summit/PythonAPI/carla/dist/carla-0.9.8-py3.8-linux-x86_64.egg')))
+    
 import carla
 
 DEBUG = args.debug
@@ -56,6 +59,7 @@ MAX_STEER = np.deg2rad(70)
 ZMQ_ADDRESS = 'tcp://127.0.0.1'
 SUMMIT_PATH = os.path.expanduser('~/summit/CarlaUE4.sh')
 SUMMIT_SCRIPTS_PATH = os.path.expanduser('~/summit/PythonAPI/examples')
+#debug_print(f"Summit path: {SUMMIT_SCRIPTS_PATH}")
 SUMMIT_DATA_PATH = os.path.expanduser('~/summit/Data')
 
 EGO_AGENT_PATH_RESOLUTION = 0.1
@@ -66,8 +70,8 @@ PROGRESS_REWARD_WEIGHT = 1.0
 COLLISION_REWARD = -100
 GAMMA = 0.98
 SEARCH_DEPTH = 40
-LOW_SPEED_THRESHOLD = EGO_AGENT_MAX_SPEED / 2.0;
-LOW_SPEED_PENALTY = -1.0 * COLLISION_REWARD * (1 - GAMMA) / (1 - GAMMA**SEARCH_DEPTH);
+LOW_SPEED_THRESHOLD = EGO_AGENT_MAX_SPEED / 2.0
+LOW_SPEED_PENALTY = -1.0 * COLLISION_REWARD * (1 - GAMMA) / (1 - GAMMA**SEARCH_DEPTH)
 MAX_STEPS = 150
 DELTA = 0.2
 MACRO_LENGTH = args.macro_length
@@ -113,6 +117,7 @@ def environment_process(port):
     socket.connect('{}:{}'.format(ZMQ_ADDRESS, port))
 
     if args.mode == 'magic':
+        debug_print('Loading magic model...')
         device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         gen_model = MAGICGenNet_DriveHard(MACRO_LENGTH, True, True).float().to(device)
         gen_model.load_state_dict(torch.load(args.model_path))
@@ -346,7 +351,7 @@ class CarlaSimulator:
                 SUMMIT_PATH,
                 '-carla-port={}'.format(self.port),
                 '-quality-level={}'.format('Epic' if VISUALIZE else 'Low'),
-                '-opengl'
+                '-{}'.format('opengl' if VISUALIZE else 'RenderOffscreen')
             ],
             env=dict(os.environ, SDL_VIDEODRIVER='' if VISUALIZE else 'offscreen'),
             stdin=subprocess.PIPE,
@@ -480,25 +485,30 @@ class CarlaSimulator:
                 '--num-car={}'.format(NUM_EXO_AGENTS),
                 '--num-bike=0',
                 '--num-pedestrian=0',
-                '--no-respawn',
+                #'--no-respawn',
                 '--seed={}'.format(int(time.time())),
                 '--speed-car={}'.format(EXO_AGENT_PREF_SPEED),
                 '--port={}'.format(self.port),
                 '--pyroport={}'.format(self.pyro_port),
-                '--aim-center'
+                #'--aim-center'
             ],
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             preexec_fn=os.setsid)
+        #time.sleep(5)
         self.crowd_service = Pyro4.Proxy('PYRO:crowdservice.warehouse@localhost:{}'.format(self.pyro_port))
         debug_print('        Delaying for crowd service to launch...')
         time.sleep(3)
         debug_print('        Waiting for spawn target to be reached...')
-        while not self.crowd_service.spawn_target_reached:
+        #while not self.crowd_service.spawn_target_reached:
+        #    time.sleep(0.2)
+        time.sleep(5)
+        while self.crowd_service.spawn_car:
             time.sleep(0.2)
 
         # Assign actor id to indexes.
+        debug_print("Alloing agent list to refresh...")
         time.sleep(1) # To allow agent list to refresh.
         self.exo_actor_indexes = dict()
         index = 0
@@ -612,6 +622,8 @@ if __name__ == '__main__':
     socket.setsockopt(zmq.RCVTIMEO, 1000)
     socket.setsockopt(zmq.LINGER, 0)
     zmq_port = socket.bind_to_random_port(ZMQ_ADDRESS)
+    if args.mode=='magic':
+        multiprocessing.set_start_method('spawn')
     env_p = multiprocessing.Process(
             target=environment_process,
             args=(zmq_port,),
@@ -624,7 +636,9 @@ if __name__ == '__main__':
     debug_print('Launched')
 
     debug_print('Initializing environment...')
+    debug_print('obtaining observations...')
     obs = sim.observe()
+    debug_print('initialise belief...')
     socket.send_pyobj(('INITIALIZE_BELIEF', obs.serialize(), sim.context()))
     socket.recv_pyobj()
     action_queue = [(0.0, 0.0) for _ in range(1 if args.mode in ['pomcpow', 'sac'] else MACRO_LENGTH)]

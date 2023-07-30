@@ -1,1 +1,8 @@
 learned_*/
+benchmark_seq.py
+benchmark_vision.py
+evaluate_vision.py
+evaluate_vlmag.py
+train_sequence.py
+train_vision.py
+train.sh

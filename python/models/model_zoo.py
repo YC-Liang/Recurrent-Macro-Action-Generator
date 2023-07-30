@@ -55,7 +55,6 @@ class MAGICGen_Autoencoder(nn.Module):
             self.concentration = nn.Parameter(100 * torch.ones(NUM_CURVES), requires_grad=True)
 
     def forward(self, c, x):
-
         x = x.reshape((x.shape[0], -1, self.particle_size))
 
         if self.context_dependent or self.belief_dependent:
@@ -258,10 +257,10 @@ class MAGICGen_Autoencoder_DriveHard(nn.Module):
 
         return macro_actions
 
-class MAGICGen_Encode_RNN(nn.Module):
+class MAGICGen_Encoder(nn.Module):
     def __init__(self, context_size, particle_size, context_dependent, belief_dependent):
-        print("Using RNN Encoder...")
-        super(MAGICGen_Encode_RNN, self).__init__()
+        print("Using the Encoder...")
+        super(MAGICGen_Encoder, self).__init__()
         self.context_size = context_size
         self.particle_size = particle_size
         self.context_dependent = context_dependent
@@ -277,7 +276,7 @@ class MAGICGen_Encode_RNN(nn.Module):
             self.fc4 = nn.Linear(512, 256)
             self.fc5 = nn.Linear(256, 128)
             self.fc6 = nn.Linear(128, 32)
-            self.lstm = nn.LSTM(32, 32)
+            self.fc7 = nn.Linear(32, 32)
 
             # Output layer.
             self.fc10_mean = nn.Linear(32, NUM_CURVES * (2 * MACRO_CURVE_ORDER))
@@ -288,7 +287,7 @@ class MAGICGen_Encode_RNN(nn.Module):
             self.mean = nn.Parameter(torch.normal(torch.zeros(NUM_CURVES * (2 * MACRO_CURVE_ORDER)), 1), requires_grad=True)
             self.concentration = nn.Parameter(100 * torch.ones(NUM_CURVES), requires_grad=True)
 
-    def forward(self, c, x, hidden, cell):
+    def forward(self, c, x):
 
         x = x.reshape((x.shape[0], -1, self.particle_size))
 
@@ -309,12 +308,7 @@ class MAGICGen_Encode_RNN(nn.Module):
             x = F.relu(self.fc4(x))
             x = F.relu(self.fc5(x))
             x = F.relu(self.fc6(x))
-            if hidden.numel() == 0 or cell.numel() == 0:
-                #print("LSTM using new memory")
-                x, (hidden, cell) = self.lstm(x)
-            else:
-                #print("LSTM using previous memory")
-                x, (hidden, cell) = self.lstm(x, (hidden, cell))
+            x = F.relu(self.fc7(x))
 
 
             mean = self.fc10_mean(x)
@@ -323,8 +317,7 @@ class MAGICGen_Encode_RNN(nn.Module):
 
             concentration = 1 + F.softplus(self.fc10_concentration(x))
 
-            return (PowerSpherical(mean, concentration),), hidden, cell
-
+            return (PowerSpherical(mean, concentration),)
         else:
             mean = torch.cat(x.shape[0] * [self.mean.unsqueeze(0)], dim=0)
             concentration = torch.cat(x.shape[0] * [self.concentration.unsqueeze(0)], dim=0)
@@ -333,26 +326,26 @@ class MAGICGen_Encode_RNN(nn.Module):
             mean = mean / (mean**2).sum(dim=-1, keepdim=True).sqrt()
             concentration = 1 + F.softplus(concentration)
 
-            return (PowerSpherical(mean, concentration),), hidden, cell
+            return (PowerSpherical(mean, concentration),)
 
-    def rsample(self, c, x, hidden, cell):
-        (macro_actions_dist,), hidden, cell = self.forward(c, x, hidden, cell)
+    def rsample(self, c, x):
+        (macro_actions_dist,) = self.forward(c, x)
         macro_actions = macro_actions_dist.rsample()
         macro_actions = macro_actions.view((-1, NUM_CURVES * 2 * MACRO_CURVE_ORDER))
         macro_actions_entropy = macro_actions_dist.entropy()
 
-        return (macro_actions, macro_actions_entropy), hidden, cell
+        return (macro_actions, macro_actions_entropy)
 
-    def mode(self, c, x, hidden, cell):
-        (macro_actions_dist,), hidden, cell = self.forward(c, x, hidden, cell)
+    def mode(self, c, x):
+        (macro_actions_dist,) = self.forward(c, x)
         macro_actions = macro_actions_dist.loc.view((-1, NUM_CURVES * 2 * MACRO_CURVE_ORDER))
 
-        return macro_actions, hidden, cell
+        return macro_actions
 
 
 class MAGICGen_RNN(nn.Module):
     def __init__(self, context_size, particle_size, context_dependent, belief_dependent):
-        print("Using the Sequential RNN...")
+        print("Using the Sequential RNN 2 lstm...")
         super(MAGICGen_RNN, self).__init__()
         self.context_size = context_size
         self.particle_size = particle_size
@@ -369,7 +362,7 @@ class MAGICGen_RNN(nn.Module):
             self.fc4 = nn.Linear(512, 256)
             self.fc5 = nn.Linear(256, 128)
             self.fc6 = nn.Linear(128, 32)
-            self.lstm = nn.LSTM(32, 32, 6, batch_first=False)
+            self.lstm = nn.LSTM(32, 32, 2, batch_first=False)
 
             # Output layer.
             self.fc10_mean = nn.Linear(32, NUM_CURVES * (2 * MACRO_CURVE_ORDER))
@@ -439,6 +432,204 @@ class MAGICGen_RNN(nn.Module):
     def mode(self, c, x, hidden, cell):
         (macro_actions_dist,), hidden, cell = self.forward(c, x, hidden, cell)
         macro_actions = macro_actions_dist.loc.view((-1, NUM_CURVES * 2 * MACRO_CURVE_ORDER))
+
+        return macro_actions, hidden, cell
+
+class MAGICGenNet_DriveHard_Encoder(nn.Module):
+    def __init__(self, macro_length, context_dependent, belief_dependent):
+
+        super(MAGICGenNet_DriveHard_Encoder, self).__init__()
+        print("Using DriveHard encoder...")
+        self.context_size = 300
+        self.num_exo_agents = 15
+        self.ego_size = 6 + 4 + 1
+        self.exo_size = 6 + 4
+        self.context_dependent = context_dependent
+        self.belief_dependent = belief_dependent
+
+        if self.context_dependent or self.belief_dependent:
+
+            if self.belief_dependent:
+                self.exo_fc1 = nn.Linear(self.exo_size, 64)
+                self.exo_fc2 = nn.Linear(64, 64)
+                self.exo_fc3 = nn.Linear(64, 64)
+
+                self.particle_fc1 = nn.Linear(self.ego_size + 64, 128)
+                #self.particle_fc1 = nn.Linear(self.ego_size, 128)
+                self.particle_fc2 = nn.Linear(128, 128)
+                self.particle_fc3 = nn.Linear(128, 128)
+
+            # FC over combined context and belief.
+            self.fc1 = nn.Linear(self.context_size * self.context_dependent + 128 * self.belief_dependent, 512)
+            self.fc2 = nn.Linear(512, 256)
+            self.fc3 = nn.Linear(256, 128)
+            self.fc4 = nn.Linear(128, 32)
+            self.fc5 = nn.Linear(32, 32)
+
+            # Output layer.
+            self.fc8_mean = nn.Linear(32, 14)
+            self.fc8_std = nn.Linear(32, 14)
+            torch.nn.init.constant_(self.fc8_std.bias, 1)
+        else:
+            self.mean = nn.Parameter(torch.normal(torch.zeros(14), 1), requires_grad=True)
+            self.std = nn.Parameter(1 * torch.ones(14), requires_grad=True)
+
+    def forward(self, c, x):
+
+        if self.context_dependent or self.belief_dependent:
+            if self.belief_dependent:
+                x = x.reshape((x.shape[0], -1, self.ego_size + self.num_exo_agents * self.exo_size))
+
+                x_ego = x[...,:self.ego_size]
+
+                x_exo = x[...,self.ego_size:].reshape((x.shape[0], -1, self.num_exo_agents, self.exo_size))
+                x_exo = F.relu(self.exo_fc1(x_exo))
+                x_exo = F.relu(self.exo_fc2(x_exo))
+                x_exo = F.relu(self.exo_fc3(x_exo))
+                x_exo = x_exo.mean(dim=-2) # Merge across exo agents.
+
+                x_particle = torch.cat([x_ego, x_exo], dim=-1)
+                x_particle = F.relu(self.particle_fc1(x_particle))
+                x_particle = F.relu(self.particle_fc2(x_particle))
+                x_particle = F.relu(self.particle_fc3(x_particle))
+                x = x_particle.mean(dim=-2) # Merge across particles.
+
+
+            x = torch.cat(
+                    ([c] if self.context_dependent else []) \
+                    + ([x] if self.belief_dependent else []), dim=-1)
+
+            x = F.relu(self.fc1(x))
+            x = F.relu(self.fc2(x))
+            x = F.relu(self.fc3(x))
+            x = F.relu(self.fc4(x))
+            x = F.relu(self.fc5(x))
+
+            mean = LeakyHardTanh(self.fc8_mean(x), -5, 5)
+            std = LeakyReLUTop(F.softplus(self.fc8_std(x)) + EPS, 5)
+
+            return distributions.Normal(mean, std)
+        else:
+            mean = LeakyHardTanh(torch.cat(x.shape[0] * [self.mean.unsqueeze(0)], dim=0), -5, 5)
+            std = torch.cat(x.shape[0] * [self.std.unsqueeze(0)], dim=0)
+            std = LeakyReLUTop(F.softplus(std) + EPS, 5)
+
+            return distributions.Normal(mean, std)
+
+    def rsample(self, c, x):
+        macro_actions_dist = self.forward(c, x)
+        macro_actions_x_t = macro_actions_dist.rsample()
+        macro_actions_y_t = torch.tanh(macro_actions_x_t)
+        macro_actions_entropy = -macro_actions_dist.log_prob(macro_actions_x_t)
+        macro_actions_entropy += torch.log(1 - macro_actions_y_t.pow(2) + 1e-6)
+
+        return (macro_actions_y_t, macro_actions_entropy)
+
+    def mode(self, c, x):
+        macro_actions_dist = self.forward(c, x)
+        macro_actions = torch.tanh(macro_actions_dist.mean)
+
+        return macro_actions
+
+class MAGICGenNet_DriveHard_RNN(nn.Module):
+    def __init__(self, macro_length, context_dependent, belief_dependent):
+
+        super(MAGICGenNet_DriveHard_RNN, self).__init__()
+        print("Using DriveHard RNN 8 lstm...")
+        self.context_size = 300
+        self.num_exo_agents = 15
+        self.ego_size = 6 + 4 + 1
+        self.exo_size = 6 + 4
+        self.context_dependent = context_dependent
+        self.belief_dependent = belief_dependent
+
+        if self.context_dependent or self.belief_dependent:
+
+            if self.belief_dependent:
+                self.exo_fc1 = nn.Linear(self.exo_size, 64)
+                self.exo_fc2 = nn.Linear(64, 64)
+                self.exo_fc3 = nn.Linear(64, 64)
+
+                self.particle_fc1 = nn.Linear(self.ego_size + 64, 128)
+                #self.particle_fc1 = nn.Linear(self.ego_size, 128)
+                self.particle_fc2 = nn.Linear(128, 128)
+                self.particle_fc3 = nn.Linear(128, 128)
+
+            # FC over combined context and belief.
+            self.fc1 = nn.Linear(self.context_size * self.context_dependent + 128 * self.belief_dependent, 512)
+            self.fc2 = nn.Linear(512, 256)
+            self.fc3 = nn.Linear(256, 128)
+            self.fc4 = nn.Linear(128, 32)
+            self.lstm = nn.LSTM(32, 32, 8, batch_first=False)
+
+            # Output layer.
+            self.fc8_mean = nn.Linear(32, 14)
+            self.fc8_std = nn.Linear(32, 14)
+            torch.nn.init.constant_(self.fc8_std.bias, 1)
+        else:
+            self.mean = nn.Parameter(torch.normal(torch.zeros(14), 1), requires_grad=True)
+            self.std = nn.Parameter(1 * torch.ones(14), requires_grad=True)
+
+    def forward(self, c, x, hidden, cell):
+
+        if self.context_dependent or self.belief_dependent:
+            if self.belief_dependent:
+                x = x.reshape((x.shape[0], -1, self.ego_size + self.num_exo_agents * self.exo_size))
+
+                x_ego = x[...,:self.ego_size]
+
+                x_exo = x[...,self.ego_size:].reshape((x.shape[0], -1, self.num_exo_agents, self.exo_size))
+                x_exo = F.relu(self.exo_fc1(x_exo))
+                x_exo = F.relu(self.exo_fc2(x_exo))
+                x_exo = F.relu(self.exo_fc3(x_exo))
+                x_exo = x_exo.mean(dim=-2) # Merge across exo agents.
+
+                x_particle = torch.cat([x_ego, x_exo], dim=-1)
+                x_particle = F.relu(self.particle_fc1(x_particle))
+                x_particle = F.relu(self.particle_fc2(x_particle))
+                x_particle = F.relu(self.particle_fc3(x_particle))
+                x = x_particle.mean(dim=-2) # Merge across particles.
+
+
+            x = torch.cat(
+                    ([c] if self.context_dependent else []) \
+                    + ([x] if self.belief_dependent else []), dim=-1)
+
+            x = F.relu(self.fc1(x))
+            x = F.relu(self.fc2(x))
+            x = F.relu(self.fc3(x))
+            x = F.relu(self.fc4(x))
+            #print(f'Input shape to LSTM {x.size()}')
+            if hidden.numel() == 0 or cell.numel() == 0:
+                #print("LSTM using new memory")
+                x, (hidden, cell) = self.lstm(x)
+            else:
+                #print("LSTM using previous memory")
+                x, (hidden, cell) = self.lstm(x, (hidden, cell))
+
+            mean = LeakyHardTanh(self.fc8_mean(x), -5, 5)
+            std = LeakyReLUTop(F.softplus(self.fc8_std(x)) + EPS, 5)
+
+            return distributions.Normal(mean, std), hidden, cell
+        else:
+            mean = LeakyHardTanh(torch.cat(x.shape[0] * [self.mean.unsqueeze(0)], dim=0), -5, 5)
+            std = torch.cat(x.shape[0] * [self.std.unsqueeze(0)], dim=0)
+            std = LeakyReLUTop(F.softplus(std) + EPS, 5)
+
+            return distributions.Normal(mean, std), hidden, cell
+
+    def rsample(self, c, x, hidden, cell):
+        macro_actions_dist, hidden, cell = self.forward(c, x, hidden, cell)
+        macro_actions_x_t = macro_actions_dist.rsample()
+        macro_actions_y_t = torch.tanh(macro_actions_x_t)
+        macro_actions_entropy = -macro_actions_dist.log_prob(macro_actions_x_t)
+        macro_actions_entropy += torch.log(1 - macro_actions_y_t.pow(2) + 1e-6)
+
+        return (macro_actions_y_t, macro_actions_entropy), hidden, cell
+
+    def mode(self, c, x, hidden, cell):
+        macro_actions_dist, hidden, cell = self.forward(c, x, hidden, cell)
+        macro_actions = torch.tanh(macro_actions_dist.mean)
 
         return macro_actions, hidden, cell
 

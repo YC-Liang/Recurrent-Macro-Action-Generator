@@ -34,6 +34,9 @@ class Environment:
 
         self.context_arr = np.asarray([])
         self.state_arr = np.asarray([])
+        self.temp_history_size = 5
+        self.temp_history = np.asarray([]) #this is for vision sequence
+        self.temp_trajectory = np.asarray([]) #this is for array sequence
 
     def read_context(self):
         data = np.array([x[0] for x in struct.iter_unpack('f', b64decode(self.process.stdout.readline().decode('utf8').strip()))])
@@ -52,9 +55,9 @@ class Environment:
         return data
 
     def construct_visual(self):
-        SCENARIO_MIN = -35.0
+        SCENARIO_MIN = -30.0
         SCENARIO_MAX = 30.0
-        RESOLUTION = 0.1
+        RESOLUTION = 1
 
         #helper function that converts world frame to opencv frame
 
@@ -68,7 +71,7 @@ class Environment:
         x_to_frame = lambda x : int((x-SCENARIO_MIN)/RESOLUTION)
         y_to_frame = lambda y : int((SCENARIO_MAX-y)/RESOLUTION)
 
-        #build white background
+        #build the background
         img = np.zeros((
             int(abs(SCENARIO_MAX * 2)/RESOLUTION),
             int(abs(SCENARIO_MIN * 2)/RESOLUTION),
@@ -109,26 +112,45 @@ class Environment:
             to_frame(d[2:]),
             (69, 69, 186),
             -1)
+
         #draw belief particles, 100 of them, the first one in an particle is the step number
         belief_particles = self.state_arr.reshape(100,3)
         for b in belief_particles:
             cv.drawMarker(img,
             to_frame(b[1:]),
             (0,255,255),
-            8,
-            2,
+            10,
+            4,
             4)
-        print(belief_particles[87])
-        cv.imshow('visual', img)
-        #raise Exception("Not Implemented yet")
-        cv.waitKey()
 
+        #preprocess the image shape and colour
+        img = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
 
+        #update the temp trajectory
+        if len(self.temp_history) == 0:
+            #if there is no trajectory, stack the same initial trajectory to fill the empty space
+            self.temp_history = np.stack([img for _ in range(self.temp_history_size)], axis=0)
+        else:
+            self.temp_history = np.delete(self.temp_history, -1, axis=0)
+            self.temp_history = np.insert(self.temp_history, 0, img, axis=0)
+
+        return self.temp_history
+
+    def construct_trajectory(self):
+        if len(self.temp_trajectory) == 0:
+            self.temp_trajectory = np.stack([self.state_arr for _ in range(self.temp_history_size)], axis=0)
+        else:
+            self.temp_trajectory = np.delete(self.temp_trajectory, -1, axis=0)
+            self.temp_trajectory = np.insert(self.temp_trajectory, 0, self.state_arr, axis=0)
         
+        return self.temp_trajectory
 
 
 
-        
+    def clear_temp_history(self):
+        self.temp_history = np.asarray([])
+        self.temp_trajectory = np.asarray([])
+        return
 
     def write_params(self, params):
         params_raw = b64encode(b''.join(struct.pack('f', p) for p in params))
@@ -136,6 +158,8 @@ class Environment:
         self.process.stdin.flush()
 
     def process_response(self):
+        #first_input = self.process.stdout.readline().decode('utf8').strip()
+        #print(f"first input: {first_input}")
         best_value = float(self.process.stdout.readline().decode('utf8').strip())
         if best_value > 9999999:
             best_value = None

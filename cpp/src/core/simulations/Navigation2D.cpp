@@ -39,7 +39,8 @@ list_t<list_t<Navigation2D::Action>> Navigation2D::Action::CreateHandcrafted(siz
 
 list_t<list_t<Navigation2D::Action>> Navigation2D::Action::Deserialize(const list_t<float>& params, size_t macro_length) {
   //receives a list of list of action indices. idx 0 means end of action. else, orientation is idx-1 degrees
-  if(params.size() % macro_length != 0){throw std::logic_error("Wrong number of parsed macro actions.");}
+
+  /*if(params.size() % macro_length != 0){throw std::logic_error("Wrong number of parsed macro actions.");}
   list_t<list_t<Navigation2D::Action>> macro_actions;
   Action trigger_action;
   trigger_action.trigger = true;
@@ -66,7 +67,7 @@ list_t<list_t<Navigation2D::Action>> Navigation2D::Action::Deserialize(const lis
     macro_actions.back().push_back(orientation);
     count++;
   }
-  /*
+  
   for(auto row : macro_actions){
     for(auto action : row){
       std::cout << action.orientation << ',';
@@ -74,6 +75,11 @@ list_t<list_t<Navigation2D::Action>> Navigation2D::Action::Deserialize(const lis
     std::cout << std::endl;
   }*/
 
+  list_t<list_t<Navigation2D::Action>> macro_actions = StandardMacroActionDeserialization<Navigation2D::Action>(params, macro_length);
+  //Action trigger_action;
+  //trigger_action.trigger = true;
+  //macro_actions.emplace_back();
+  //macro_actions.back().emplace_back(trigger_action);
   return macro_actions;
 }
 
@@ -85,9 +91,21 @@ Navigation2D::Navigation2D() : step(0), _is_terminal(false), _is_failure(false) 
 
 Navigation2D Navigation2D::CreateRandom() {
 /*
-Sets the ego mean starting position and goal position for this simulation
-For now we fix the starting position just to test everything first
+Sets the ego mean starting position, goal position and sample
+a small set of light position for this simulation
 */
+  //sample light positions from avaliable light positions
+  LIGHT_POSITION.clear();
+  list_t<int> indices;
+  for (int j = 0; j < 20; ++j)
+        indices.push_back(j);
+  std::mt19937 local_rng(std::random_device{}());
+  shuffle(indices.begin(), indices.end(), local_rng); 
+  for(unsigned i = 0; i < 7; i++){
+    //std::cout << "Indices: " << id << std::endl;
+    LIGHT_POSITION.push_back(ALL_LIGHT_POSITION[indices[i]]);
+  }
+  
   //initialise starting position, choosing between two entries
   int rand = std::uniform_int_distribution<>(1, 10)(Rng());
   if(rand <= 5){
@@ -354,11 +372,10 @@ void Navigation2D::EncodeContext(list_t<float>& data) {
   }
 }
 
-//TODO: Add in render functions for visualisation
 cv::Mat Navigation2D::Render(const list_t<Navigation2D>& belief_sims,
     const list_t<list_t<Action>>& macro_actions, const vector_t& macro_action_start) const {
 
-  constexpr float SCENARIO_MIN = -35.0f; //half width of the environment
+  constexpr float SCENARIO_MIN = -30.0f; //half width of the environment
   constexpr float SCENARIO_MAX = 30.0f; //half height of the nevironment
   constexpr float RESOLUTION = 0.1f;
   auto to_frame = [&](const vector_t& vector) {
@@ -387,6 +404,13 @@ cv::Mat Navigation2D::Render(const list_t<Navigation2D>& belief_sims,
       CV_8UC3,
       cv::Scalar(255, 255, 255));
 
+  //draw lights
+  for(const auto &light : LIGHT_POSITION){
+    //std::cout << x_to_frame(light.x) << "," << y_to_frame(light.y) << std::endl;
+    cv::Point p (x_to_frame(light.x), y_to_frame(light.y));
+    cv::circle(frame, p,to_frame_dist(LIGHT_RADIUS), cv::Scalar(26, 118, 245), -1, cv::LINE_AA);
+  }
+
   //draw walls
   for (const auto &wall : CLOSED_WALLS){
     cv::Point p1(x_to_frame(wall[0]), y_to_frame(wall[1]));
@@ -403,12 +427,6 @@ cv::Mat Navigation2D::Render(const list_t<Navigation2D>& belief_sims,
     cv::rectangle(frame, p1, p2,
               cv::Scalar(69, 69, 186),
               -1, cv::LINE_8);
-  }
-
-  //draw lights
-  for(const auto &light : LIGHT_POSITION){
-    cv::Point p (x_to_frame(light.x), y_to_frame(light.y));
-    cv::circle(frame, p,to_frame_dist(LIGHT_RADIUS), cv::Scalar(104, 43, 159), -1, cv::LINE_AA);
   }
 
   cv::drawMarker(frame, to_frame(EGO_START_MEAN),

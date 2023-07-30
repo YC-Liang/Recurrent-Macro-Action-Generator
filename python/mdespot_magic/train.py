@@ -11,7 +11,7 @@ parser.add_argument('--num-env', type=int, default=16,
 parser.add_argument('--num-iterations', type=int, default=None)
 parser.add_argument('--not-belief-dependent', dest='belief_dependent', default=True, action='store_false')
 parser.add_argument('--not-context-dependent', dest='context_dependent', default=True, action='store_false')
-parser.add_argument('--output-dir', required=False, default=None)
+parser.add_argument('--output-dir', required=False, default=None, help="Model save directory, none means no model saving")
 parser.add_argument('--gen-model-name', required = False, default = "Vanilla")
 parser.add_argument('--log-dir', required=False, default=None)
 args = parser.parse_args()
@@ -21,7 +21,8 @@ import sys
 sys.path.append('{}/../'.format(os.path.dirname(os.path.realpath(__file__))))
 from environment import Environment, Response
 from models import MAGICGenNet, MAGICCriticNet, MAGICGenNet_DriveHard, MAGICCriticNet_DriveHard
-from models import MAGICGen_Autoencoder, MAGICGen_Encode_RNN, MAGICGen_RNN, MAGICCritic_RNN, MAGICCritic_Autoencoder
+from models import MAGICGen_Autoencoder, MAGICGen_RNN, MAGICGen_Encoder
+from models import MAGICGenNet_DriveHard_RNN, MAGICGenNet_DriveHard_Encoder
 from replay import ReplayBuffer
 from utils import PARTICLE_SIZES, CONTEXT_SIZES
 
@@ -55,7 +56,7 @@ PRINT_INTERVAL = 100
 RECENT_HISTORY_LENGTH = 50
 OUTPUT_DIR = args.output_dir
 GEN_MODEL = args.gen_model_name
-GEN_MODELS = ['Vanilla', 'Autoencoder', 'RNN', 'RNN-Autoencoder']
+GEN_MODELS = ['Vanilla', 'Autoencoder', 'RNN', 'Encoder']
 LOG_DIR = args.log_dir
 SAVE_PATH = 'learned_{}_{}/'.format(TASK, MACRO_LENGTH)
 LOG_SAVE_PATH = 'learned_{}_{}.csv'.format(TASK, MACRO_LENGTH)
@@ -82,6 +83,10 @@ elif TASK in ['Navigation2D']:
     TARGET_ENTROPY = [-5.0] * NUM_CURVES
     LOG_ALPHA_INIT = [-2.0] * NUM_CURVES
     LR = 1e-4
+elif TASK in ['PuckPushHard']:
+    TARGET_ENTROPY = [-5.0] * NUM_CURVES
+    LOG_ALPHA_INIT = [-1.0] * NUM_CURVES
+    LR = 1e-4
 LOG_ALPHA_MIN = -10.
 LOG_ALPHA_MAX = 20.
 
@@ -104,7 +109,6 @@ def environment_process(port):
         context = environment.read_context()
         #context = cv2.imdecode(context, cv2.IMREAD_UNCHANGED)[...,0:2]
         state = environment.read_state()
-        visual = environment.construct_visual()
 
         # Call generator if needed.
         if state is not None:
@@ -152,7 +156,6 @@ def rand_macro_action_set_drive_straight(num_macros):
     return x.astype(np.float32)
 
 if __name__ == '__main__':
-
     if OUTPUT_DIR is not None:
         if not os.path.exists(OUTPUT_DIR):
             try:
@@ -168,29 +171,36 @@ if __name__ == '__main__':
             except:
                 pass
         #empty any previous same log file 
-        open(LOG_DIR + '/' + LOG_SAVE_PATH, 'w').close()
+        open(LOG_DIR, 'w').close()
 
 
     save_path = SAVE_PATH
     if OUTPUT_DIR is not None:
         save_path = OUTPUT_DIR + '/' + save_path
-    if not os.path.exists(save_path):
-        os.mkdir(save_path)
+        if not os.path.exists(save_path):
+            os.mkdir(save_path)
 
     # Load models.
     print('Loading models...')
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     if TASK in ['DriveHard']:
         #TODO: Change model according to the command line input
-        gen_model = MAGICGenNet_DriveHard(MACRO_LENGTH, CONTEXT_DEPENDENT, BELIEF_DEPENDENT).float().to(device)
-        critic_model = MAGICCriticNet_DriveHard(MACRO_LENGTH, True, True).float().to(device)
+        if GEN_MODEL == 'RNN':
+            gen_model = MAGICGenNet_DriveHard_RNN(MACRO_LENGTH, CONTEXT_DEPENDENT, BELIEF_DEPENDENT).float().to(device)
+            critic_model = MAGICCriticNet_DriveHard(MACRO_LENGTH, True, True).float().to(device)
+        elif GEN_MODEL == "Encoder":
+            gen_model = MAGICGenNet_DriveHard_Encoder(MACRO_LENGTH, CONTEXT_DEPENDENT, BELIEF_DEPENDENT).float().to(device)
+            critic_model = MAGICCriticNet_DriveHard(MACRO_LENGTH, True, True).float().to(device)
+        else:
+            gen_model = MAGICGenNet_DriveHard(MACRO_LENGTH, CONTEXT_DEPENDENT, BELIEF_DEPENDENT).float().to(device)
+            critic_model = MAGICCriticNet_DriveHard(MACRO_LENGTH, True, True).float().to(device)
     else:
         if GEN_MODEL == 'Vanilla':
             gen_model = MAGICGenNet(CONTEXT_SIZE, PARTICLE_SIZE, CONTEXT_DEPENDENT, BELIEF_DEPENDENT).float().to(device)
         elif GEN_MODEL == 'Autoencoder':
             gen_model = MAGICGen_Autoencoder(CONTEXT_SIZE, PARTICLE_SIZE, CONTEXT_DEPENDENT, BELIEF_DEPENDENT).float().to(device)
-        elif GEN_MODEL == 'RNN-Autoencoder':
-            gen_model = MAGICGen_Encode_RNN(CONTEXT_SIZE, PARTICLE_SIZE, CONTEXT_DEPENDENT, BELIEF_DEPENDENT).float().to(device)
+        elif GEN_MODEL == 'Encoder':
+            gen_model = MAGICGen_Encoder(CONTEXT_SIZE, PARTICLE_SIZE, CONTEXT_DEPENDENT, BELIEF_DEPENDENT).float().to(device)
         elif GEN_MODEL == 'RNN':
             gen_model = MAGICGen_RNN(CONTEXT_SIZE, PARTICLE_SIZE, CONTEXT_DEPENDENT, BELIEF_DEPENDENT).float().to(device)
         else:
@@ -241,7 +251,7 @@ if __name__ == '__main__':
                     params = rand_macro_action_set(8, 3) #8 macro action, 3 points
             else:
                 with torch.no_grad():
-                    if GEN_MODEL not in ['RNN-Autoencoder', 'RNN']:
+                    if GEN_MODEL not in ['RNN']:
                         (macro_actions, macro_actions_entropy) = gen_model.rsample(
                                 torch.tensor(instruction_data[0], dtype=torch.float, device=device).unsqueeze(0),
                                 torch.tensor(instruction_data[1], dtype=torch.float, device=device).unsqueeze(0))
@@ -353,7 +363,7 @@ if __name__ == '__main__':
 
             # save logs as csv file
             if LOG_DIR != None:
-                with open(LOG_DIR + '/' + LOG_SAVE_PATH, 'a') as log_file:
+                with open(LOG_DIR, 'a') as log_file:
                     #step, reward, collision, value, GPU memory, Critic Net Loss, Macro Action Mean, Macro Action SD, Curve Entropy
                     log_file.write(str(step) + ',')
                     log_file.write(str(np.mean(recent_total_reward)) if len(recent_total_reward) > 0 else 'NULL')
@@ -368,17 +378,17 @@ if __name__ == '__main__':
                     log_file.write(str(critic_loss.detach().item()))
                     log_file.write('\n')
 
-            # Save models.
-            if step % SAVE_INTERVAL == 0:
+            # Save models if an output directory is given.
+            if OUTPUT_DIR != None and step % SAVE_INTERVAL == 0:
                 print('Saving models....')
-                torch.save(gen_model.state_dict(), save_path + 'gen_model.pt.{:08d}'.format(step))
-                torch.save(critic_model.state_dict(), save_path + 'critic_model.pt.{:08d}'.format(step))
+                torch.save(gen_model.state_dict(), save_path + 'gen_model.pt.{:08d}.{:03d}'.format(step))
+                torch.save(critic_model.state_dict(), save_path + 'critic_model.pt.{:08d}.{:03d}'.format(step))
 
             if NUM_ITERATIONS is not None and step >= NUM_ITERATIONS:
                 for p in processes:
                     p.terminate()
                     p.join()
                 socket.close()
-                exit()
+                break
 
             step += 1

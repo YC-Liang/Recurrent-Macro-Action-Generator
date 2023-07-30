@@ -7,10 +7,8 @@ import sys
 import time
 import zmq
 
-sys.path.append(glob.glob(os.path.expanduser('~/summit/PythonAPI/carla/dist/carla-*%d.%d-%s.egg' % (
-    sys.version_info.major,
-    sys.version_info.minor,
-    'win-amd64' if os.name == 'nt' else 'linux-x86_64')))[0])
+#print(os.path.expanduser('~/summit/PythonAPI/carla/dist/carla-0.9.8-py3.8-linux-x86_64.egg'))
+sys.path.append(glob.glob(os.path.expanduser('~/summit/PythonAPI/carla/dist/carla-0.9.8-py3.8-linux-x86_64.egg'))[0])
 import carla
 
 ZMQ_ADDRESS = 'tcp://127.0.0.1'
@@ -25,10 +23,11 @@ SPEED_KI = 0.66666 * SPEED_KU / SPEED_TU
 SPEED_KD = 0.11111 * SPEED_KU * SPEED_TU
 
 try:
-    sys.path.append(glob.glob(os.path.expanduser('~/summit/PythonAPI/carla/dist/carla-*%d.%d-%s.egg' % (
-        sys.version_info.major,
-        sys.version_info.minor,
-        'win-amd64' if os.name == 'nt' else 'linux-x86_64')))[0])
+    #sys.path.append(glob.glob(os.path.expanduser('~/summit/PythonAPI/carla/dist/carla-*%d.%d-%s.egg' % (
+    #    sys.version_info.major,
+    #    sys.version_info.minor,
+    #    'win-amd64' if os.name == 'nt' else 'linux-x86_64')))[0])
+    sys.path.append(glob.glob(os.path.expanduser('~/summit/PythonAPI/carla/dist/carla-0.9.8-py3.8-linux-x86_64.egg'))[0])
 except IndexError:
     pass
 import carla

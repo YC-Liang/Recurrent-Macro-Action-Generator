@@ -13,6 +13,9 @@
 #elif defined SIM_PuckPush
   #include "core/simulations/PuckPush.h"
   typedef simulations::PuckPush ExpSimulation;
+#elif defined SIM_PuckPushHard
+  #include "core/simulations/PuckPushHard.h"
+  typedef simulations::PuckPushHard ExpSimulation;
 #elif defined SIM_VdpTag
   #include "core/simulations/VdpTag.h"
   typedef simulations::VdpTag ExpSimulation;

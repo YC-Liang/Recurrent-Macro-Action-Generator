@@ -77,6 +77,11 @@ The `python` folder contains all scripts to run experiments. It is split into mu
         - e.g. `python3 --task=LightDark --trials=30 --num-env=16`
 - ~~`rwi/`: Scripts to run real world experiments~~ (You won't need this for the virtual experiments).
 - `utils/`: Miscellaneous utilities and static variables.
+- `summit/`: scripts to start running summit test environment.
+  - To start the carla in a port, run `./CarlaUE4.sh --prefernvidia --world-port=23000 -windowed -ResX=1200 -ResY=800 4.26.2-0+++UE4+Release-4.26 522 0`
+  - `simulator.py`: to run summit simulator
+    - e.g. `python simulator.py`
+    - e.g. `python3 simulator.py --mode=magic --model-path=../models/learned_DriveHard_3/gen_model.pt.00100000 --debug --visualize`
 
 # Running Tests
 
@@ -90,3 +95,27 @@ To verify our implementation, run `python3 pomcpow/benchmark.py --task=VdpTag`.
 
 - This runs our C++ POMCPOW implementation against a C++ port of the [VdpTag task](https://github.com/zsunberg/VDPTag2.jl).
 - The accumulated reward should substantially exceed the authors' Julia version on the same machine, due to optimizations by GCC.
+
+
+### Errors
+```
+Process Process-1:
+Traceback (most recent call last):
+  File "/home/james/miniconda3/envs/magic2/lib/python3.8/multiprocessing/process.py", line 315, in _bootstrap
+    self.run()
+  File "/home/james/miniconda3/envs/magic2/lib/python3.8/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "simulator.py", line 121, in environment_process
+    gen_model = MAGICGenNet_DriveHard(MACRO_LENGTH, True, True).float().to(device)
+  File "/home/james/miniconda3/envs/magic2/lib/python3.8/site-packages/torch/nn/modules/module.py", line 989, in to
+    return self._apply(convert)
+  File "/home/james/miniconda3/envs/magic2/lib/python3.8/site-packages/torch/nn/modules/module.py", line 641, in _apply
+    module._apply(fn)
+  File "/home/james/miniconda3/envs/magic2/lib/python3.8/site-packages/torch/nn/modules/module.py", line 664, in _apply
+    param_applied = fn(param)
+  File "/home/james/miniconda3/envs/magic2/lib/python3.8/site-packages/torch/nn/modules/module.py", line 987, in convert
+    return t.to(device, dtype if t.is_floating_point() or t.is_complex() else None, non_blocking)
+  File "/home/james/miniconda3/envs/magic2/lib/python3.8/site-packages/torch/cuda/__init__.py", line 217, in _lazy_init
+    raise RuntimeError(
+RuntimeError: Cannot re-initialize CUDA in forked subprocess. To use CUDA with multiprocessing, you must use the 'spawn' start method
+```
