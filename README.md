@@ -1,16 +1,10 @@
-# Macro-Action Generator-Critic (MAGIC): Learning Macro-actions for Online POMDP Planning
+# Recurrent Macro Actions Generator for POMDP Planning
 
-This repository contains the source code for our project on learning macro-actions using the Macro-Action Generator-Critic (MAGIC) algorithm:
+By Yuanch Liang and Hanna Kurniawati
 
-    @INPROCEEDINGS{Lee-RSS-21, 
-        AUTHOR    = {Yiyuan Lee AND Panpan Cai AND David Hsu}, 
-        TITLE     = {{MAGIC: Learning Macro-Actions for Online POMDP Planning }}, 
-        BOOKTITLE = {Proceedings of Robotics: Science and Systems}, 
-        YEAR      = {2021}, 
-        ADDRESS   = {Virtual}, 
-        MONTH     = {July}, 
-        DOI       = {10.15607/RSS.2021.XVII.041} 
-    } 
+School of Computing, The Australian National University, Canberra, Australia
+
+
 
 ### Overview
 
