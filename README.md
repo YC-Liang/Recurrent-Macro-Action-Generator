@@ -7,7 +7,7 @@ School of Computing, The Australian National University, Canberra, Australia
 
 
 ### Overview
-[Full paper](https://ieeexplore-ieee-org.virtual.anu.edu.au/abstract/document/10341759)
+[Full paper link here.](https://ieeexplore-ieee-org.virtual.anu.edu.au/abstract/document/10341759)
 
 We propose to use a encoder and a recurrent generator conditoned on the encoded environment context to produce macro actions for a planner. 
 
