@@ -7,6 +7,8 @@ School of Computing, The Australian National University, Canberra, Australia
 
 
 ### Overview
+[Full paper](https://ieeexplore-ieee-org.virtual.anu.edu.au/abstract/document/10341759)
+
 We propose to use a encoder and a recurrent generator conditoned on the encoded environment context to produce macro actions for a planner. 
 
 <img src="misc/framework.png" alt="frame work" width="500"/>
@@ -62,7 +64,6 @@ To run the (virtual) experiments, you will need to have:
 The `python` folder contains all scripts to run experiments. It is split into multiple subfolders each serving a different purpose.
 Note in the code we name MAGIC as the vanilla model, MAE as the encoder and RMAG as the RNN model.
 
-- ~~`alphabot/`: Scripts which are run on a real world robot to listen to control commands over WiFi~~ (You won't need this for the virtual experiments).
 - `mdespot_handcrafted/`: Scripts to run (Macro-)DESPOT using handcrafted actions/macro-actions on our tasks.
     - `evaluate.py`: to visualize the approach.
         - e.g. `python3 evaluate.py --task=LightDark --macro-length=4`
